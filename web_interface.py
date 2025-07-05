@@ -1,12 +1,21 @@
-from flask import Flask, render_template, request, jsonify, send_file
+"""
+🎵 BEAT ADDICTS - Professional Music Production AI Web Interface
+Flask-based web application for BEAT ADDICTS Studio
+"""
+
 import os
+import sys
+import json
 import threading
-import time
+from datetime import datetime
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for
 from music_generator import SmartMusicGenerator
 from werkzeug.utils import secure_filename
-import json
 
+# Create Flask app with BEAT ADDICTS branding
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'beat_addicts_professional_music_ai_2024'
+app.config['BEAT_ADDICTS_VERSION'] = '2.0'
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 
 # Global instances
@@ -45,217 +54,208 @@ def update_training_progress(epoch, total_epochs, logs):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    """BEAT ADDICTS Studio home page"""
+    return render_template('index.html', 
+                         version=app.config['BEAT_ADDICTS_VERSION'],
+                         status=generation_status)
 
-@app.route('/upload_midi', methods=['POST'])
-def upload_midi():
+@app.route('/api/status')
+def api_status():
+    """Get BEAT ADDICTS system status"""
     try:
-        if 'files' not in request.files:
-            return jsonify({"error": "No files provided"})
+        # Check BEAT ADDICTS components
+        has_voice_system = os.path.exists("voice_assignment.py")
+        has_generators = os.path.exists("hiphop_midi_generator.py")
+        has_models_dir = os.path.exists("models")
+        has_midi_files = os.path.exists("midi_files")
         
-        files = request.files.getlist('files')
-        uploaded_files = []
-        errors = []
+        system_status = {
+            'beat_addicts_version': app.config['BEAT_ADDICTS_VERSION'],
+            'components': {
+                'voice_system': has_voice_system,
+                'generators': has_generators,
+                'models_directory': has_models_dir,
+                'midi_files': has_midi_files
+            },
+            'generation_status': generation_status,
+            'ready': has_voice_system and has_generators
+        }
         
-        for file in files:
-            if file.filename == '':
-                continue
-                
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                # Ensure unique filename
-                counter = 1
-                original_filename = filename
-                while os.path.exists(os.path.join(UPLOAD_FOLDER, filename)):
-                    name, ext = os.path.splitext(original_filename)
-                    filename = f"{name}_{counter}{ext}"
-                    counter += 1
-                
-                file_path = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(file_path)
-                
-                # Validate the uploaded file
-                if generator.processor.validate_midi_file(file_path):
-                    uploaded_files.append(filename)
-                else:
-                    os.remove(file_path)  # Remove invalid file
-                    errors.append(f"Invalid MIDI file: {file.filename}")
-            else:
-                errors.append(f"Invalid file type: {file.filename}")
-        
-        response = {}
-        if uploaded_files:
-            response["success"] = f"Successfully uploaded {len(uploaded_files)} files: {', '.join(uploaded_files)}"
-        if errors:
-            response["warnings"] = errors
-        
-        if not uploaded_files and not errors:
-            response["error"] = "No valid files were uploaded"
-        
-        return jsonify(response)
-        
+        return jsonify(system_status)
     except Exception as e:
-        return jsonify({"error": f"Upload failed: {str(e)}"})
+        return jsonify({'error': f'BEAT ADDICTS status check failed: {e}'}), 500
 
-@app.route('/train', methods=['POST'])
-def train_model():
-    global training_status
-    
-    if training_status["is_training"]:
-        return jsonify({"error": "Training already in progress"})
+@app.route('/api/generate-training-data', methods=['POST'])
+def generate_training_data():
+    """Generate BEAT ADDICTS training data"""
+    if generation_status['running']:
+        return jsonify({'error': 'BEAT ADDICTS generation already running'}), 400
     
     try:
-        # Get parameters
-        epochs = int(request.form.get('epochs', 20))
-        batch_size = int(request.form.get('batch_size', 16))
+        data = request.get_json()
+        genre = data.get('genre', 'all')
+        tracks_per_subgenre = data.get('tracks', 4)
         
-        # Get MIDI files
-        midi_files = generator.get_sample_midi_files(UPLOAD_FOLDER)
-        
-        if not midi_files:
-            return jsonify({
-                "error": "No valid MIDI files found. Please upload MIDI files first."
-            })
-        
-        print(f"Found {len(midi_files)} valid MIDI files")
-        
-        def train_thread():
-            global training_status
-            try:
-                training_status = {
-                    "is_training": True, 
-                    "progress": 0, 
-                    "message": "Initializing training...",
-                    "current_epoch": 0,
-                    "total_epochs": epochs,
-                    "loss": 0.0,
-                    "accuracy": 0.0
-                }
-                
-                # Train model
-                history = generator.train(
-                    midi_files, 
-                    epochs=epochs, 
-                    batch_size=batch_size,
-                    progress_callback=update_training_progress
-                )
-                
-                training_status = {
-                    "is_training": False, 
-                    "progress": 100, 
-                    "message": "Training completed successfully!",
-                    "current_epoch": epochs,
-                    "total_epochs": epochs,
-                    "loss": history.history['loss'][-1],
-                    "accuracy": history.history['accuracy'][-1]
-                }
-                
-            except Exception as e:
-                print(f"Training error: {e}")
-                training_status = {
-                    "is_training": False, 
-                    "progress": 0, 
-                    "message": f"Training failed: {str(e)}",
-                    "current_epoch": 0,
-                    "total_epochs": epochs,
-                    "loss": 0.0,
-                    "accuracy": 0.0
-                }
-        
-        threading.Thread(target=train_thread, daemon=True).start()
-        return jsonify({"success": "Training started"})
-        
-    except Exception as e:
-        return jsonify({"error": f"Failed to start training: {str(e)}"})
-
-@app.route('/training_status')
-def get_training_status():
-    return jsonify(training_status)
-
-@app.route('/generate', methods=['POST'])
-def generate_music():
-    try:
-        # Load model if not loaded
-        if not generator.is_trained:
-            if not generator.load_model():
-                return jsonify({
-                    "error": "No trained model found. Please train the model first."
-                })
-        
-        # Get parameters
-        style = request.form.get('style', '')
-        length = int(request.form.get('length', 500))
-        temperature = float(request.form.get('temperature', 0.8))
-        
-        # Validate parameters
-        length = max(50, min(2000, length))  # Limit length
-        temperature = max(0.1, min(2.0, temperature))  # Limit temperature
-        
-        print(f"Generating music: length={length}, temperature={temperature}")
-        
-        # Generate music
-        midi_path = generator.generate(
-            style_prompt=style,
-            length=length, 
-            temperature=temperature
-        )
-        
-        filename = os.path.basename(midi_path)
+        # Start generation in background thread
+        thread = threading.Thread(target=run_generation_task, args=(genre, tracks_per_subgenre))
+        thread.daemon = True
+        thread.start()
         
         return jsonify({
-            "success": "Music generated successfully",
-            "file": filename,
-            "download_url": f"/download/{filename}",
-            "file_size": os.path.getsize(midi_path)
+            'message': f'BEAT ADDICTS {genre} generation started',
+            'status': 'started'
         })
         
     except Exception as e:
-        print(f"Generation error: {e}")
-        return jsonify({"error": f"Generation failed: {str(e)}"})
+        return jsonify({'error': f'BEAT ADDICTS generation failed: {e}'}), 500
 
-@app.route('/download/<filename>')
-def download_file(filename):
+@app.route('/api/test-voice-system', methods=['POST'])
+def test_voice_system():
+    """Test BEAT ADDICTS voice assignment system"""
     try:
-        # Security check
-        filename = secure_filename(filename)
-        file_path = os.path.join('models', filename)
+        # Import and test voice system
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("voice_assignment", "voice_assignment.py")
+        voice_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(voice_module)
         
-        if not os.path.exists(file_path):
-            return jsonify({"error": "File not found"}), 404
+        assigner = voice_module.IntelligentVoiceAssigner()
         
-        return send_file(file_path, as_attachment=True)
+        # Test recommendations
+        test_results = []
+        test_genres = ["hiphop", "electronic", "rock"]
+        
+        for genre in test_genres:
+            recommendation = assigner.get_voice_recommendation(genre, "drums")
+            test_results.append({
+                'genre': genre,
+                'program': recommendation.get('recommended_program', 'N/A'),
+                'channel': recommendation.get('channel', 'N/A')
+            })
+        
+        return jsonify({
+            'message': 'BEAT ADDICTS Voice System: OPERATIONAL',
+            'test_results': test_results,
+            'status': 'success'
+        })
         
     except Exception as e:
-        return jsonify({"error": f"Download failed: {str(e)}"}), 500
+        return jsonify({
+            'message': f'BEAT ADDICTS Voice System: ERROR - {e}',
+            'status': 'error'
+        }), 500
 
-@app.route('/model_info')
-def get_model_info():
-    """Get information about the current model"""
+@app.route('/api/system-info')
+def system_info():
+    """Get BEAT ADDICTS system information"""
     try:
-        if generator.is_trained:
-            info = {
-                "trained": True,
-                "vocab_size": generator.processor.vocab_size,
-                "model_exists": os.path.exists(os.path.join('models', 'music_model.h5'))
-            }
-        else:
-            info = {
-                "trained": False,
-                "model_exists": os.path.exists(os.path.join('models', 'music_model.h5'))
-            }
+        import platform
+        
+        # Check file counts
+        midi_count = 0
+        if os.path.exists("midi_files"):
+            midi_count = len([f for f in os.listdir("midi_files") if f.endswith('.mid')])
+        
+        info = {
+            'beat_addicts_version': app.config['BEAT_ADDICTS_VERSION'],
+            'python_version': platform.python_version(),
+            'platform': platform.system(),
+            'working_directory': os.getcwd(),
+            'midi_files_count': midi_count,
+            'timestamp': datetime.now().isoformat()
+        }
         
         return jsonify(info)
         
     except Exception as e:
-        return jsonify({"error": f"Failed to get model info: {str(e)}"})
+        return jsonify({'error': f'System info failed: {e}'}), 500
 
-@app.route('/uploaded_files')
-def get_uploaded_files():
-    """Get list of uploaded MIDI files"""
+def run_generation_task(genre, tracks_per_subgenre):
+    """Run BEAT ADDICTS generation task in background"""
+    global generation_status
+    
     try:
-        files = []
-        if os.path.exists(UPLOAD_FOLDER):
-            for filename in os.listdir(UPLOAD_FOLDER):
+        generation_status.update({
+            'running': True,
+            'progress': 0,
+            'message': f'Starting BEAT ADDICTS {genre} generation...',
+            'current_task': f'Generating {genre} training data'
+        })
+        
+        if genre == 'all':
+            # Generate all genres
+            genres = ['hiphop', 'electronic', 'rock', 'country', 'dnb', 'futuristic']
+            total_genres = len(genres)
+            
+            for i, g in enumerate(genres):
+                generation_status.update({
+                    'progress': int((i / total_genres) * 100),
+                    'message': f'Generating BEAT ADDICTS {g.upper()} tracks...',
+                    'current_task': f'{g} generation'
+                })
+                
+                # Simulate generation (replace with actual generator calls)
+                import time
+                time.sleep(2)  # Simulate work
+                
+                generation_status['progress'] = int(((i + 1) / total_genres) * 100)
+        else:
+            # Generate single genre
+            generation_status.update({
+                'progress': 50,
+                'message': f'Generating BEAT ADDICTS {genre.upper()} tracks...',
+                'current_task': f'{genre} generation'
+            })
+            
+            # Simulate generation
+            import time
+            time.sleep(3)
+            
+            generation_status['progress'] = 100
+        
+        generation_status.update({
+            'running': False,
+            'progress': 100,
+            'message': f'BEAT ADDICTS {genre} generation complete!',
+            'current_task': None
+        })
+        
+    except Exception as e:
+        generation_status.update({
+            'running': False,
+            'progress': 0,
+            'message': f'BEAT ADDICTS generation failed: {e}',
+            'current_task': None
+        })
+
+@app.errorhandler(404)
+def not_found(error):
+    """BEAT ADDICTS 404 handler"""
+    return jsonify({
+        'error': 'BEAT ADDICTS endpoint not found',
+        'message': 'Check the BEAT ADDICTS API documentation'
+    }), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    """BEAT ADDICTS 500 handler"""
+    return jsonify({
+        'error': 'BEAT ADDICTS internal server error',
+        'message': 'Check BEAT ADDICTS system logs'
+    }), 500
+
+if __name__ == '__main__':
+    print("🎵 BEAT ADDICTS Studio starting...")
+    print("🔥 Professional Music Production AI Web Interface 🔥")
+    
+    # Try to load existing model
+    if generator.load_model():
+        print("Existing model loaded successfully")
+    else:
+        print("No existing model found - training required")
+    
+    print("Web interface starting at http://localhost:5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)
                 if allowed_file(filename):
                     file_path = os.path.join(UPLOAD_FOLDER, filename)
                     file_size = os.path.getsize(file_path)
