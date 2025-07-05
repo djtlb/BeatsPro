@@ -1,8 +1,22 @@
-import pretty_midi
+try:
+    import pretty_midi
+    PRETTY_MIDI_AVAILABLE = True
+except ImportError:
+    print("⚠️ pretty_midi not available, using simple MIDI fallback")
+    PRETTY_MIDI_AVAILABLE = False
+    # Import our simple MIDI generator as fallback
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'beat_addicts_core'))
+    try:
+        from simple_midi_generator import BeatAddictsSimpleMIDIGenerator
+    except ImportError:
+        print("❌ Simple MIDI generator fallback not available")
+
 import numpy as np
 import os
 import random
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -38,6 +52,12 @@ class DrumAndBassMIDIGenerator:
     """Advanced Drum and Bass MIDI generator covering all subgenres"""
     
     def __init__(self):
+        self.use_pretty_midi = PRETTY_MIDI_AVAILABLE
+        if not self.use_pretty_midi:
+            self.simple_generator = BeatAddictsSimpleMIDIGenerator()
+        else:
+            self.simple_generator = None
+            
         self.subgenre_specs = {
             DNBSubgenre.LIQUID: DNBCharacteristics(
                 bpm_range=(170, 180),
@@ -469,76 +489,58 @@ class DrumAndBassMIDIGenerator:
                     start=fx_time, end=fx_time + fx_duration
                 ))
     
-    def generate_training_dataset(self, output_dir: str = "midi_files", 
-                                 tracks_per_subgenre: int = 5):
-        """Generate a complete training dataset with all DNB subgenres"""
+    def generate_simple_dnb_track(self, subgenre_name: str = "liquid", duration_bars: int = 32, output_file: Optional[str] = None) -> Optional[str]:
+        """Generate DNB track using simple MIDI generator when pretty_midi is not available"""
+        if self.use_pretty_midi:
+            # Use the original complex method if pretty_midi is available
+            try:
+                subgenre = DNBSubgenre(subgenre_name.lower())
+                midi_result = self.generate_dnb_track(subgenre, duration_bars)
+                if output_file:
+                    midi_result.write(output_file)
+                    return output_file
+                else:
+                    temp_file = f"dnb_{subgenre_name}_{duration_bars}bars.mid"
+                    midi_result.write(temp_file)
+                    return temp_file
+            except Exception as e:
+                print(f"⚠️ Pretty MIDI generation failed: {e}, using simple fallback")
+                self.use_pretty_midi = False
         
+        # Use simple generator fallback
+        if not self.use_pretty_midi and self.simple_generator:
+            print(f"🎵 Using simple MIDI generator for DNB {subgenre_name}")
+            return self.simple_generator.generate_beat('dnb', duration_bars, output_file)
+        else:
+            print("❌ No MIDI generation method available")
+            return None
+
+    def generate_training_dataset(self, output_dir: str = "midi_files", tracks_per_subgenre: int = 4) -> List[str]:
+        """Generate comprehensive DNB training dataset"""
         os.makedirs(output_dir, exist_ok=True)
         generated_files = []
         
-        print("🎵 Generating Drum and Bass training dataset...")
+        print("🎵 BEAT ADDICTS DNB - Generating Training Dataset")
         
-        for subgenre in DNBSubgenre:
-            print(f"📀 Generating {tracks_per_subgenre} tracks for {subgenre.value}...")
+        dnb_subgenres = ["liquid", "neurofunk", "jump_up", "darkstep", "deep"]
+        
+        for subgenre in dnb_subgenres:
+            print(f"   🎼 Generating {subgenre.upper()} tracks...")
             
-            for track_num in range(tracks_per_subgenre):
-                # Vary track length
-                duration_bars = random.randint(16, 64)
+            for i in range(tracks_per_subgenre):
+                bars = 16 + (i * 8)  # Vary track length
+                filename = os.path.join(output_dir, f"dnb_{subgenre}_{i+1:02d}.mid")
                 
-                # Generate track
-                midi_track = self.generate_dnb_track(subgenre, duration_bars)
-                
-                # Save file
-                filename = f"dnb_{subgenre.value}_{track_num + 1:02d}.mid"
-                filepath = os.path.join(output_dir, filename)
-                midi_track.write(filepath)
-                
-                generated_files.append(filepath)
-                print(f"   ✅ Generated: {filename}")
+                result = self.generate_simple_dnb_track(subgenre, bars, filename)
+                if result:
+                    generated_files.append(result)
+                    print(f"      ✅ Generated: {os.path.basename(result)}")
         
-        print(f"\n🎉 Dataset generation complete!")
-        print(f"📊 Generated {len(generated_files)} tracks across {len(DNBSubgenre)} subgenres")
-        print(f"📁 Files saved to: {output_dir}")
-        
-        # Generate summary
-        self._generate_dataset_summary(output_dir, generated_files)
-        
+        print(f"🎯 DNB Dataset complete: {len(generated_files)} files generated")
         return generated_files
-    
-    def _generate_dataset_summary(self, output_dir: str, generated_files: List[str]):
-        """Generate a summary of the dataset"""
-        
-        summary_path = os.path.join(output_dir, "dnb_dataset_info.txt")
-        
-        # Fix Unicode encoding for Windows compatibility
-        with open(summary_path, 'w', encoding='utf-8') as f:
-            f.write("Drum and Bass Training Dataset Summary\n")
-            f.write("=" * 50 + "\n\n")
-            
-            f.write(f"Total tracks generated: {len(generated_files)}\n")
-            f.write(f"Number of subgenres: {len(DNBSubgenre)}\n\n")
-            
-            f.write("Subgenres included:\n")
-            for subgenre in DNBSubgenre:
-                specs = self.subgenre_specs[subgenre]
-                f.write(f"  - {subgenre.value.upper()}\n")
-                f.write(f"    BPM Range: {specs.bpm_range[0]}-{specs.bpm_range[1]}\n")
-                f.write(f"    Atmosphere: {specs.atmosphere}\n")
-                f.write(f"    Melodic: {'Yes' if specs.melodic_elements else 'No'}\n\n")
-            
-            f.write("Training Tips:\n")
-            f.write("- Use all files for diverse DNB generation\n")
-            f.write("- Train for 30-50 epochs for best results\n")
-            f.write("- Experiment with temperature 0.7-0.9 for DNB generation\n")
-            f.write("- Higher complexity subgenres may need more training data\n\n")
-            
-            f.write("File List:\n")
-            for i, file_path in enumerate(generated_files, 1):
-                filename = os.path.basename(file_path)
-                f.write(f"{i:3d}. {filename}\n")
-        
-        print(f"Dataset summary saved to: {summary_path}")
 
+    # ...existing code...
+    
 def main():
     """Generate the complete DNB training dataset"""
     try:

@@ -21,52 +21,57 @@ class BeatAddictsUniversalGenerator:
         self.setup_generators()
     
     def setup_generators(self):
-        """Initialize all available BEAT ADDICTS genre generators"""
+        """Initialize all available BEAT ADDICTS genre generators using wrapper classes"""
         print("🎵 BEAT ADDICTS - Initializing Universal Generator")
         print("🔥 Professional Music Production AI v2.0 🔥")
         
-        generator_configs = [
-            ('dnb_midi_generator', 'DrumAndBassMIDIGenerator', 'dnb', 'BEAT ADDICTS DNB'),
-            ('hiphop_midi_generator', 'HipHopMIDIGenerator', 'hiphop', 'BEAT ADDICTS Hip-Hop'),
-            ('electronic_midi_generator', 'ElectronicMIDIGenerator', 'electronic', 'BEAT ADDICTS Electronic'),
-            ('country_midi_generator', 'CountryMIDIGenerator', 'country', 'BEAT ADDICTS Country'),
-            ('rock_midi_generator', 'RockMIDIGenerator', 'rock', 'BEAT ADDICTS Rock'),
-            ('futuristic_midi_generator', 'FuturisticMIDIGenerator', 'futuristic', 'BEAT ADDICTS Futuristic')
-        ]
-        
-        for module_name, class_name, key, display_name in generator_configs:
-            try:
-                # Check multiple possible locations
-                module_paths = [
-                    f"{module_name}.py",
-                    f"../{module_name}.py",
-                    f"../beat_addicts_generators/{module_name}.py"
-                ]
-                
-                module_found = False
-                for module_path in module_paths:
-                    if os.path.exists(module_path):
-                        # Add directory to path for import
-                        module_dir = os.path.dirname(os.path.abspath(module_path))
-                        if module_dir not in sys.path:
-                            sys.path.insert(0, module_dir)
-                        
-                        try:
-                            module = __import__(module_name)
-                            generator_class = getattr(module, class_name)
-                            self.generators[key] = generator_class()
-                            self.available_genres.append(key)
-                            print(f"✅ {display_name} Generator loaded")
-                            module_found = True
-                            break
-                        except Exception as e:
-                            print(f"⚠️ {display_name} import error: {e}")
-                
-                if not module_found:
-                    print(f"⚠️ {display_name} Generator file not found")
+        # Import our generator wrapper classes
+        try:
+            from generator_wrapper import (
+                DrumAndBassMIDIGenerator,
+                HipHopMIDIGenerator, 
+                ElectronicMIDIGenerator,
+                RockMIDIGenerator,
+                CountryMIDIGenerator,
+                FuturisticMIDIGenerator
+            )
+            
+            # Initialize all generators using wrapper classes
+            generator_configs = [
+                (DrumAndBassMIDIGenerator, 'dnb', 'BEAT ADDICTS DNB'),
+                (HipHopMIDIGenerator, 'hiphop', 'BEAT ADDICTS Hip-Hop'),
+                (ElectronicMIDIGenerator, 'electronic', 'BEAT ADDICTS Electronic'),
+                (CountryMIDIGenerator, 'country', 'BEAT ADDICTS Country'),
+                (RockMIDIGenerator, 'rock', 'BEAT ADDICTS Rock'),
+                (FuturisticMIDIGenerator, 'futuristic', 'BEAT ADDICTS Futuristic')
+            ]
+            
+            for generator_class, key, display_name in generator_configs:
+                try:
+                    self.generators[key] = generator_class()
+                    self.available_genres.append(key)
+                    print(f"✅ {display_name} Generator connected")
+                except Exception as e:
+                    print(f"⚠️ {display_name} Generator error: {e}")
                     
-            except Exception as e:
-                print(f"⚠️ {display_name} Generator not available: {e}")
+        except ImportError as e:
+            print(f"⚠️ Generator wrapper import error: {e}")
+            print("🔄 Falling back to simple generator...")
+            
+            # Fallback to simple generator if wrappers aren't available
+            try:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'beat_addicts_core'))
+                from simple_midi_generator import BeatAddictsSimpleMIDIGenerator
+                
+                # Create fallback generators for each genre
+                fallback_genres = ['dnb', 'hiphop', 'electronic', 'rock', 'country', 'futuristic']
+                for genre in fallback_genres:
+                    self.generators[genre] = BeatAddictsSimpleMIDIGenerator()
+                    self.available_genres.append(genre)
+                    print(f"✅ BEAT ADDICTS {genre.upper()} Generator (fallback)")
+                    
+            except ImportError:
+                print("❌ No generators available - please check installation")
     
     def generate_all_datasets(self, output_dir: str = "midi_files", tracks_per_subgenre: int = 4):
         """Generate comprehensive BEAT ADDICTS training datasets for all available genres"""

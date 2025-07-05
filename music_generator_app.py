@@ -6,41 +6,57 @@ import wave
 from datetime import datetime
 import io
 import base64
-import scipy.signal
-import scipy.fft
-from scipy import signal
-import librosa
 import random
 import math
-from scipy import signal
+
+# Try to import scipy components with fallbacks
+try:
+    import scipy.signal
+    from scipy import signal
+    SCIPY_AVAILABLE = True
+except ImportError:
+    print("⚠️ SciPy not available - using basic audio processing")
+    SCIPY_AVAILABLE = False
+
+try:
+    import librosa
+    LIBROSA_AVAILABLE = True
+except ImportError:
+    print("⚠️ Librosa not available - using basic audio processing")
+    LIBROSA_AVAILABLE = False
 
 # Add beat_addicts modules to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'beat_addicts_core'))
 sys.path.append(os.path.join(os.path.dirname(__file__), 'beat_addicts_generators'))
 
-# Import BEAT ADDICTS modules
+# Import BEAT ADDICTS modules using connection manager
 try:
-    from voice_handler import BeatAddictsVoiceHandler
-    from voice_integration import BeatAddictsVoiceIntegration  
-    from universal_midi_generator import BeatAddictsUniversalGenerator
-    from song_exporter import BeatAddictsSongExporter
+    from beat_addicts_connection_manager import BeatAddictsConnectionManager
     
-    # Import from fix_web_interface for audio generation
-    import sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'beat_addicts_core'))
-    from fix_web_interface import SimpleAudioGenerator
+    # Initialize connection manager
+    print("🔌 Initializing BEAT ADDICTS Connection Manager...")
+    connection_manager = BeatAddictsConnectionManager()
+    all_connections = connection_manager.connect_all()
     
-    # Import specific generators
-    from dnb_midi_generator import DrumAndBassMIDIGenerator
-    from hiphop_midi_generator import HipHopMIDIGenerator 
-    from electronic_midi_generator import ElectronicMIDIGenerator
-    from rock_midi_generator import RockMIDIGenerator
+    # Extract connected modules
+    connected_core = all_connections.get('core', {})
+    connected_generators = all_connections.get('generators', {})
+    
+    # Get the instances we need
+    voice_handler = connected_core.get('voice_handler')
+    voice_integration = connected_core.get('voice_integration')
+    song_exporter = connected_core.get('song_exporter')
+    simple_audio_generator = connected_core.get('simple_audio_generator')
+    universal_generator = connected_generators.get('universal')
     
     BEAT_ADDICTS_AVAILABLE = True
-    print("🎵 BEAT ADDICTS modules successfully connected!")
+    print("🎵 BEAT ADDICTS modules successfully connected via Connection Manager!")
+    
 except ImportError as e:
-    print(f"⚠️ BEAT ADDICTS modules not available: {e}")
+    print(f"⚠️ BEAT ADDICTS Connection Manager not available: {e}")
     BEAT_ADDICTS_AVAILABLE = False
+    voice_handler = None
+    simple_audio_generator = None
 
 app = Flask(__name__)
 
@@ -55,27 +71,25 @@ class MusicEngine:
         self.note_frequencies = self._generate_note_frequencies()
         
         # Initialize BEAT ADDICTS modules if available
-        if BEAT_ADDICTS_AVAILABLE:
+        if BEAT_ADDICTS_AVAILABLE and simple_audio_generator:
             try:
-                self.voice_handler = BeatAddictsVoiceHandler()
-                self.universal_generator = BeatAddictsUniversalGenerator()
-                self.simple_audio_generator = SimpleAudioGenerator()
-                
-                # Initialize specific genre generators
-                self.genre_generators = {
-                    'dnb': DrumAndBassMIDIGenerator(),
-                    'hiphop': HipHopMIDIGenerator(),
-                    'electronic': ElectronicMIDIGenerator(),
-                    'rock': RockMIDIGenerator()
-                }
+                self.voice_handler = voice_handler
+                self.simple_audio_generator = simple_audio_generator
+                self.universal_generator = universal_generator
+                self.song_exporter = song_exporter
                 
                 self.beat_addicts_enabled = True
                 print("🔥 BEAT ADDICTS Professional Music Engine Activated!")
+                print(f"   ✅ Voice Handler: {'Available' if voice_handler else 'Not Available'}")
+                print(f"   ✅ Audio Generator: {'Available' if simple_audio_generator else 'Not Available'}")
+                print(f"   ✅ Universal Generator: {'Available' if universal_generator else 'Not Available'}")
+                
             except Exception as e:
                 print(f"⚠️ BEAT ADDICTS integration failed: {e}")
                 self.beat_addicts_enabled = False
         else:
             self.beat_addicts_enabled = False
+            print("⚠️ BEAT ADDICTS modules not available for MusicEngine")
         
     def _generate_note_frequencies(self):
         """Generate a full frequency map for musical notes"""
@@ -142,13 +156,14 @@ def generate_audio_wave(duration, genre, mood, prompt):
             print(f"🔥 BEAT ADDICTS Professional Generation: {genre}")
             
             # Use BEAT ADDICTS SimpleAudioGenerator for direct audio
-            audio_data = music_engine.simple_audio_generator.generate_simple_beat(
-                bpm=120 if 'electronic' in genre.lower() else 140,
-                bars=int(duration / 2)  # Approximate bars from duration
+            audio_data = music_engine.simple_audio_generator.generate_genre_beat(
+                genre=genre,
+                duration=duration,
+                bpm=120 if 'electronic' in genre.lower() else 140
             )
             
             if audio_data and len(audio_data) > 0:
-                print("✅ BEAT ADDICTS generation successful!")
+                print(f"✅ BEAT ADDICTS generation successful! Generated {len(audio_data)} samples")
                 # Convert to numpy array and normalize
                 audio_array = np.array(audio_data, dtype=np.float32) / 32768.0
                 return audio_array, sample_rate
@@ -347,11 +362,36 @@ def generate_pop_beat(duration, sample_rate, synth):
     return beat
 
 def apply_lowpass_filter(audio, sample_rate, cutoff_freq):
-    """Apply a low-pass filter"""
-    nyquist = sample_rate / 2
-    normalized_cutoff = cutoff_freq / nyquist
-    b, a = signal.butter(4, normalized_cutoff, btype='low')
-    return signal.filtfilt(b, a, audio)
+    """Apply a low-pass filter with fallback if scipy not available"""
+    if not SCIPY_AVAILABLE:
+        # Simple fallback filter - basic smoothing
+        return simple_lowpass_filter(audio, cutoff_freq, sample_rate)
+    
+    try:
+        nyquist = sample_rate / 2
+        normalized_cutoff = cutoff_freq / nyquist
+        
+        # Ensure cutoff is valid
+        if normalized_cutoff >= 1.0:
+            normalized_cutoff = 0.99
+        if normalized_cutoff <= 0.0:
+            normalized_cutoff = 0.01
+            
+        b, a = signal.butter(4, normalized_cutoff, btype='low')
+        return signal.filtfilt(b, a, audio)
+    except Exception as e:
+        print(f"⚠️ Filter error: {e}, using simple filter")
+        return simple_lowpass_filter(audio, cutoff_freq, sample_rate)
+
+def simple_lowpass_filter(audio, cutoff_freq, sample_rate):
+    """Simple lowpass filter fallback"""
+    # Simple moving average filter as fallback
+    window_size = max(1, int(sample_rate / cutoff_freq / 10))
+    if window_size >= len(audio):
+        return audio
+    
+    filtered = np.convolve(audio, np.ones(window_size)/window_size, mode='same')
+    return filtered
 
 def save_wav_file(audio_data, sample_rate, filename):
     """Save audio data as WAV file"""

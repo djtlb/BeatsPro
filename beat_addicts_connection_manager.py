@@ -85,12 +85,12 @@ class BeatAddictsConnectionManager:
         
         generators = {
             'universal': 'universal_midi_generator.BeatAddictsUniversalGenerator',
-            'dnb': 'dnb_midi_generator.DrumAndBassMIDIGenerator',
-            'hiphop': 'hiphop_midi_generator.HipHopMIDIGenerator',
-            'electronic': 'electronic_midi_generator.ElectronicMIDIGenerator',
-            'rock': 'rock_midi_generator.RockMIDIGenerator',
-            'country': 'country_midi_generator.CountryMIDIGenerator',
-            'futuristic': 'futuristic_midi_generator.FuturisticMIDIGenerator'
+            'dnb': 'generator_wrapper.DrumAndBassMIDIGenerator',
+            'hiphop': 'generator_wrapper.HipHopMIDIGenerator',
+            'electronic': 'generator_wrapper.ElectronicMIDIGenerator',
+            'rock': 'generator_wrapper.RockMIDIGenerator',
+            'country': 'generator_wrapper.CountryMIDIGenerator',
+            'futuristic': 'generator_wrapper.FuturisticMIDIGenerator'
         }
         
         connected = {}
@@ -109,6 +109,28 @@ class BeatAddictsConnectionManager:
                 self.connection_status[f'generator_{gen_name}'] = 'connected'
                 print(f"✅ Connected generator: {gen_name}")
                 
+            except ImportError as e:
+                if 'pretty_midi' in str(e):
+                    print(f"⚠️ {gen_name} generator: pretty_midi not available, will use fallback")
+                    # Try to connect anyway with fallback mode
+                    try:
+                        module_parts = gen_path.split('.')
+                        module = importlib.import_module(module_parts[0])
+                        class_name = module_parts[1]
+                        gen_class = getattr(module, class_name)
+                        instance = gen_class()
+                        connected[gen_name] = instance
+                        self.connected_modules[f'generator_{gen_name}'] = instance
+                        self.connection_status[f'generator_{gen_name}'] = 'connected_fallback'
+                        print(f"✅ Connected generator: {gen_name} (fallback mode)")
+                    except Exception as fallback_error:
+                        print(f"❌ Failed to connect {gen_name} generator even in fallback: {fallback_error}")
+                        self.failed_modules[f'generator_{gen_name}'] = str(e)
+                        self.connection_status[f'generator_{gen_name}'] = 'failed'
+                else:
+                    print(f"❌ Failed to connect {gen_name} generator: {e}")
+                    self.failed_modules[f'generator_{gen_name}'] = str(e)
+                    self.connection_status[f'generator_{gen_name}'] = 'failed'
             except Exception as e:
                 print(f"❌ Failed to connect {gen_name} generator: {e}")
                 self.failed_modules[f'generator_{gen_name}'] = str(e)
