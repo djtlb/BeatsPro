@@ -50,6 +50,113 @@ def check_python():
         print("❌ Python not found or not accessible")
         return False
 
+def install_dependencies_smart():
+    """Smart dependency installation with multiple fallback strategies"""
+    print("\n🔧 Smart Dependency Installation")
+    print("Trying multiple installation strategies for Windows compatibility...")
+    
+    # Strategy 1: Try minimal core dependencies first
+    print("\n📦 Strategy 1: Installing core dependencies...")
+    core_deps = [
+        "flask>=2.0.0",
+        "numpy>=1.20.0", 
+        "werkzeug>=2.0.0"
+    ]
+    
+    for dep in core_deps:
+        print(f"Installing {dep}...")
+        if run_command(f'"{sys.executable}" -m pip install --user "{dep}"', f"Install {dep}"):
+            print(f"✅ {dep} installed successfully")
+        else:
+            print(f"⚠️ {dep} failed, continuing...")
+    
+    # Strategy 2: Try MIDI libraries
+    print("\n🎵 Strategy 2: Installing MIDI libraries...")
+    midi_deps = [
+        "pretty_midi>=0.2.9",
+        "mido>=1.2.0"
+    ]
+    
+    for dep in midi_deps:
+        print(f"Installing {dep}...")
+        if run_command(f'"{sys.executable}" -m pip install --user "{dep}"', f"Install {dep}"):
+            print(f"✅ {dep} installed successfully")
+        else:
+            print(f"⚠️ {dep} failed, will try alternative...")
+    
+    # Strategy 3: Try TensorFlow (optional, can fail)
+    print("\n🧠 Strategy 3: Installing TensorFlow (optional)...")
+    tf_commands = [
+        f'"{sys.executable}" -m pip install --user "tensorflow>=2.8.0"',
+        f'"{sys.executable}" -m pip install --user "tensorflow-cpu>=2.8.0"',
+        f'"{sys.executable}" -m pip install --user "tensorflow==2.13.0"'
+    ]
+    
+    tf_installed = False
+    for cmd in tf_commands:
+        print(f"Trying: {cmd}")
+        if run_command(cmd, "Install TensorFlow"):
+            print("✅ TensorFlow installed successfully")
+            tf_installed = True
+            break
+        else:
+            print("⚠️ TensorFlow install failed, trying next method...")
+    
+    if not tf_installed:
+        print("⚠️ TensorFlow installation failed - you can still use basic features")
+    
+    # Strategy 4: Optional dependencies
+    print("\n🔧 Strategy 4: Installing optional dependencies...")
+    optional_deps = [
+        "scipy>=1.7.0",
+        "librosa>=0.9.0"
+    ]
+    
+    for dep in optional_deps:
+        print(f"Installing {dep} (optional)...")
+        run_command(f'"{sys.executable}" -m pip install --user "{dep}"', f"Install {dep}")
+    
+    return True
+
+def check_installation():
+    """Check what was actually installed"""
+    print("\n🔍 Checking Installation Results...")
+    
+    required_modules = {
+        'flask': 'Web framework - REQUIRED',
+        'numpy': 'Scientific computing - REQUIRED', 
+        'pretty_midi': 'MIDI processing - REQUIRED',
+        'mido': 'MIDI I/O - REQUIRED',
+        'tensorflow': 'AI framework - OPTIONAL',
+        'scipy': 'Scientific computing - OPTIONAL',
+        'librosa': 'Audio processing - OPTIONAL'
+    }
+    
+    installed = []
+    missing = []
+    
+    for module, description in required_modules.items():
+        try:
+            __import__(module)
+            installed.append(f"✅ {module} - {description}")
+        except ImportError:
+            missing.append(f"❌ {module} - {description}")
+    
+    print("\n📦 INSTALLATION RESULTS:")
+    for item in installed:
+        print(f"  {item}")
+    
+    if missing:
+        print("\n⚠️ MISSING DEPENDENCIES:")
+        for item in missing:
+            print(f"  {item}")
+    
+    # Check if we have minimum requirements
+    essential = ['flask', 'numpy']
+    has_essentials = all(module in [item.split()[1] for item in installed] for module in essential)
+    
+    return has_essentials, len(installed), len(missing)
+
 def main():
     """Run the complete setup process"""
     
@@ -88,30 +195,55 @@ def main():
         print("Please install Python 3.8+ from https://python.org")
         return False
     
-    # Step 2: Install dependencies
-    print_step(2, "INSTALLING DEPENDENCIES", 
-               "Installing TensorFlow, Flask, and MIDI libraries...")
-    if not run_command("pip install -r requirements.txt", 
-                      "Install all required Python packages"):
-        print("❌ Failed to install dependencies")
-        print("Try running: pip install --upgrade pip")
-        return False
+    # Step 2: Smart dependency installation
+    print_step(2, "SMART DEPENDENCY INSTALLATION", 
+               "Using multiple strategies for Windows compatibility...")
+    
+    # Try smart installation
+    install_dependencies_smart()
+    
+    # Check what we got
+    has_essentials, installed_count, missing_count = check_installation()
+    
+    if has_essentials:
+        print(f"\n✅ Essential dependencies installed! ({installed_count} installed, {missing_count} missing)")
+        print("You can proceed with the setup.")
+    else:
+        print(f"\n⚠️ Some essential dependencies missing. ({installed_count} installed, {missing_count} missing)")
+        
+        # Offer manual installation guide
+        print("\n🔧 MANUAL INSTALLATION OPTIONS:")
+        print("1. Try: pip install --user flask numpy pretty_midi mido")
+        print("2. Try: python -m pip install --upgrade pip")
+        print("3. Try: pip install --no-cache-dir flask numpy")
+        print("4. Run as administrator and try again")
+        
+        continue_anyway = input("\nContinue setup anyway? (y/n): ").lower().strip()
+        if continue_anyway not in ['y', 'yes']:
+            print("Setup stopped. Please install dependencies manually first.")
+            return False
     
     # Step 3: Generate training data
     print_step(3, "GENERATING DNB TRAINING DATA",
                "Creating 112 authentic Drum & Bass MIDI files...")
-    if not run_command(f'"{sys.executable}" run.py --create-dnb',
+    
+    # Try to generate, but don't fail if it doesn't work
+    try:
+        if run_command(f'"{sys.executable}" run.py --create-dnb',
                       "Generate comprehensive DNB training dataset"):
-        print("❌ Failed to generate training data")
-        return False
+            print("✅ Training data generated successfully")
+        else:
+            print("⚠️ Training data generation failed - you can generate it later")
+    except Exception as e:
+        print(f"⚠️ Training data generation error: {e}")
     
     # Check if files were created
     midi_dir = Path("midi_files")
     if midi_dir.exists():
         midi_files = list(midi_dir.glob("*.mid"))
-        print(f"✅ Generated {len(midi_files)} MIDI training files")
+        print(f"✅ Found {len(midi_files)} MIDI training files")
     else:
-        print("⚠️ MIDI files directory not found")
+        print("ℹ️ No MIDI files found - generate them later with: python run.py --create-dnb")
     
     # Step 4: Provide next steps
     print_step(4, "SETUP COMPLETE! 🎉")
