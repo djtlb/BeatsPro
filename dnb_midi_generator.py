@@ -510,8 +510,9 @@ class DrumAndBassMIDIGenerator:
         
         summary_path = os.path.join(output_dir, "dnb_dataset_info.txt")
         
-        with open(summary_path, 'w') as f:
-            f.write("🎵 Drum and Bass Training Dataset Summary\n")
+        # Fix Unicode encoding for Windows compatibility
+        with open(summary_path, 'w', encoding='utf-8') as f:
+            f.write("Drum and Bass Training Dataset Summary\n")
             f.write("=" * 50 + "\n\n")
             
             f.write(f"Total tracks generated: {len(generated_files)}\n")
@@ -520,30 +521,62 @@ class DrumAndBassMIDIGenerator:
             f.write("Subgenres included:\n")
             for subgenre in DNBSubgenre:
                 specs = self.subgenre_specs[subgenre]
-                f.write(f"  • {subgenre.value.upper()}\n")
-                f.write(f"    - BPM Range: {specs.bpm_range[0]}-{specs.bpm_range[1]}\n")
-                f.write(f"    - Atmosphere: {specs.atmosphere}\n")
-                f.write(f"    - Melodic: {'Yes' if specs.melodic_elements else 'No'}\n\n")
+                f.write(f"  - {subgenre.value.upper()}\n")
+                f.write(f"    BPM Range: {specs.bpm_range[0]}-{specs.bpm_range[1]}\n")
+                f.write(f"    Atmosphere: {specs.atmosphere}\n")
+                f.write(f"    Melodic: {'Yes' if specs.melodic_elements else 'No'}\n\n")
             
             f.write("Training Tips:\n")
             f.write("- Use all files for diverse DNB generation\n")
             f.write("- Train for 30-50 epochs for best results\n")
             f.write("- Experiment with temperature 0.7-0.9 for DNB generation\n")
+            f.write("- Higher complexity subgenres may need more training data\n\n")
+            
+            f.write("File List:\n")
+            for i, file_path in enumerate(generated_files, 1):
+                filename = os.path.basename(file_path)
+                f.write(f"{i:3d}. {filename}\n")
         
-        print(f"📋 Dataset summary saved to: {summary_path}")
+        print(f"Dataset summary saved to: {summary_path}")
 
 def main():
     """Generate the complete DNB training dataset"""
-    generator = DrumAndBassMIDIGenerator()
-    
-    # Generate comprehensive dataset
-    files = generator.generate_training_dataset(
-        output_dir="midi_files",
-        tracks_per_subgenre=8  # 8 tracks per subgenre = 112 total tracks
-    )
-    
-    print(f"\n🚀 Ready to train your AI with {len(files)} DNB tracks!")
-    print("Run: python run.py to start training")
+    try:
+        print("Drum and Bass MIDI Generator v2.0")
+        print("=" * 40)
+        
+        generator = DrumAndBassMIDIGenerator()
+        
+        # Check if output directory exists
+        output_dir = "midi_files"
+        if not os.path.exists(output_dir):
+            print(f"Creating output directory: {output_dir}")
+            os.makedirs(output_dir)
+        
+        # Generate comprehensive dataset
+        print("Starting DNB dataset generation...")
+        files = generator.generate_training_dataset(
+            output_dir=output_dir,
+            tracks_per_subgenre=8  # 8 tracks per subgenre = 112 total tracks
+        )
+        
+        print(f"\nSUCCESS: Generated {len(files)} DNB tracks!")
+        print(f"Files saved to: {os.path.abspath(output_dir)}")
+        print("\nNext steps:")
+        print("1. Run: python run.py")
+        print("2. Upload the generated MIDI files")
+        print("3. Start training your AI!")
+        
+        return True
+        
+    except Exception as e:
+        print(f"\nERROR: Failed to generate dataset")
+        print(f"Details: {str(e)}")
+        print("\nTroubleshooting:")
+        print("- Check disk space (need ~50MB)")
+        print("- Ensure write permissions in current directory")
+        print("- Try running as administrator if needed")
+        return False
 
 if __name__ == "__main__":
     main()

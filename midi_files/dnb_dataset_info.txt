@@ -1,0 +1,196 @@
+Drum and Bass Training Dataset Summary
+==================================================
+
+Total tracks generated: 112
+Number of subgenres: 14
+
+Subgenres included:
+  - LIQUID
+    BPM Range: 170-180
+    Atmosphere: smooth
+    Melodic: Yes
+
+  - NEUROFUNK
+    BPM Range: 170-180
+    Atmosphere: dark
+    Melodic: No
+
+  - JUMP_UP
+    BPM Range: 172-180
+    Atmosphere: energetic
+    Melodic: Yes
+
+  - HARDSTEP
+    BPM Range: 174-185
+    Atmosphere: aggressive
+    Melodic: No
+
+  - TECHSTEP
+    BPM Range: 170-175
+    Atmosphere: mechanical
+    Melodic: No
+
+  - JUNGLE
+    BPM Range: 160-180
+    Atmosphere: raw
+    Melodic: Yes
+
+  - RAGGA_JUNGLE
+    BPM Range: 160-180
+    Atmosphere: tropical
+    Melodic: Yes
+
+  - DRUMFUNK
+    BPM Range: 165-175
+    Atmosphere: minimal
+    Melodic: No
+
+  - MINIMAL
+    BPM Range: 170-176
+    Atmosphere: spacious
+    Melodic: Yes
+
+  - DEEP
+    BPM Range: 168-174
+    Atmosphere: deep
+    Melodic: Yes
+
+  - ROLLERS
+    BPM Range: 172-178
+    Atmosphere: rolling
+    Melodic: Yes
+
+  - DARKSTEP
+    BPM Range: 170-180
+    Atmosphere: dark
+    Melodic: No
+
+  - AMBIENT_DNB
+    BPM Range: 160-170
+    Atmosphere: ethereal
+    Melodic: Yes
+
+  - HALFTIME
+    BPM Range: 85-95
+    Atmosphere: modern
+    Melodic: Yes
+
+Training Tips:
+- Use all files for diverse DNB generation
+- Train for 30-50 epochs for best results
+- Experiment with temperature 0.7-0.9 for DNB generation
+- Higher complexity subgenres may need more training data
+
+File List:
+  1. dnb_liquid_01.mid
+  2. dnb_liquid_02.mid
+  3. dnb_liquid_03.mid
+  4. dnb_liquid_04.mid
+  5. dnb_liquid_05.mid
+  6. dnb_liquid_06.mid
+  7. dnb_liquid_07.mid
+  8. dnb_liquid_08.mid
+  9. dnb_neurofunk_01.mid
+ 10. dnb_neurofunk_02.mid
+ 11. dnb_neurofunk_03.mid
+ 12. dnb_neurofunk_04.mid
+ 13. dnb_neurofunk_05.mid
+ 14. dnb_neurofunk_06.mid
+ 15. dnb_neurofunk_07.mid
+ 16. dnb_neurofunk_08.mid
+ 17. dnb_jump_up_01.mid
+ 18. dnb_jump_up_02.mid
+ 19. dnb_jump_up_03.mid
+ 20. dnb_jump_up_04.mid
+ 21. dnb_jump_up_05.mid
+ 22. dnb_jump_up_06.mid
+ 23. dnb_jump_up_07.mid
+ 24. dnb_jump_up_08.mid
+ 25. dnb_hardstep_01.mid
+ 26. dnb_hardstep_02.mid
+ 27. dnb_hardstep_03.mid
+ 28. dnb_hardstep_04.mid
+ 29. dnb_hardstep_05.mid
+ 30. dnb_hardstep_06.mid
+ 31. dnb_hardstep_07.mid
+ 32. dnb_hardstep_08.mid
+ 33. dnb_techstep_01.mid
+ 34. dnb_techstep_02.mid
+ 35. dnb_techstep_03.mid
+ 36. dnb_techstep_04.mid
+ 37. dnb_techstep_05.mid
+ 38. dnb_techstep_06.mid
+ 39. dnb_techstep_07.mid
+ 40. dnb_techstep_08.mid
+ 41. dnb_jungle_01.mid
+ 42. dnb_jungle_02.mid
+ 43. dnb_jungle_03.mid
+ 44. dnb_jungle_04.mid
+ 45. dnb_jungle_05.mid
+ 46. dnb_jungle_06.mid
+ 47. dnb_jungle_07.mid
+ 48. dnb_jungle_08.mid
+ 49. dnb_ragga_jungle_01.mid
+ 50. dnb_ragga_jungle_02.mid
+ 51. dnb_ragga_jungle_03.mid
+ 52. dnb_ragga_jungle_04.mid
+ 53. dnb_ragga_jungle_05.mid
+ 54. dnb_ragga_jungle_06.mid
+ 55. dnb_ragga_jungle_07.mid
+ 56. dnb_ragga_jungle_08.mid
+ 57. dnb_drumfunk_01.mid
+ 58. dnb_drumfunk_02.mid
+ 59. dnb_drumfunk_03.mid
+ 60. dnb_drumfunk_04.mid
+ 61. dnb_drumfunk_05.mid
+ 62. dnb_drumfunk_06.mid
+ 63. dnb_drumfunk_07.mid
+ 64. dnb_drumfunk_08.mid
+ 65. dnb_minimal_01.mid
+ 66. dnb_minimal_02.mid
+ 67. dnb_minimal_03.mid
+ 68. dnb_minimal_04.mid
+ 69. dnb_minimal_05.mid
+ 70. dnb_minimal_06.mid
+ 71. dnb_minimal_07.mid
+ 72. dnb_minimal_08.mid
+ 73. dnb_deep_01.mid
+ 74. dnb_deep_02.mid
+ 75. dnb_deep_03.mid
+ 76. dnb_deep_04.mid
+ 77. dnb_deep_05.mid
+ 78. dnb_deep_06.mid
+ 79. dnb_deep_07.mid
+ 80. dnb_deep_08.mid
+ 81. dnb_rollers_01.mid
+ 82. dnb_rollers_02.mid
+ 83. dnb_rollers_03.mid
+ 84. dnb_rollers_04.mid
+ 85. dnb_rollers_05.mid
+ 86. dnb_rollers_06.mid
+ 87. dnb_rollers_07.mid
+ 88. dnb_rollers_08.mid
+ 89. dnb_darkstep_01.mid
+ 90. dnb_darkstep_02.mid
+ 91. dnb_darkstep_03.mid
+ 92. dnb_darkstep_04.mid
+ 93. dnb_darkstep_05.mid
+ 94. dnb_darkstep_06.mid
+ 95. dnb_darkstep_07.mid
+ 96. dnb_darkstep_08.mid
+ 97. dnb_ambient_dnb_01.mid
+ 98. dnb_ambient_dnb_02.mid
+ 99. dnb_ambient_dnb_03.mid
+100. dnb_ambient_dnb_04.mid
+101. dnb_ambient_dnb_05.mid
+102. dnb_ambient_dnb_06.mid
+103. dnb_ambient_dnb_07.mid
+104. dnb_ambient_dnb_08.mid
+105. dnb_halftime_01.mid
+106. dnb_halftime_02.mid
+107. dnb_halftime_03.mid
+108. dnb_halftime_04.mid
+109. dnb_halftime_05.mid
+110. dnb_halftime_06.mid
+111. dnb_halftime_07.mid
+112. dnb_halftime_08.mid

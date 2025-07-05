@@ -13,26 +13,59 @@ An intelligent music generation system using transformer neural networks with MI
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### Step-by-Step Setup Guide
+
+#### 1. Install Dependencies
+Open your terminal/command prompt in the project folder and run:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Start Web Interface
+#### 2. Generate Training Data (DNB Dataset)
+Create authentic Drum & Bass training files:
+```bash
+python run.py --create-dnb
+```
+This creates 112 DNB tracks across 14 subgenres in the `midi_files` folder.
+
+#### 3. Start the Web Interface
 ```bash
 python run.py
 ```
-Open http://localhost:5000 in your browser.
+Your browser should automatically open to `http://localhost:5000`
 
-### 3. Upload & Train
-- Upload MIDI files through the web interface
-- Click "Start Training" (recommended: 20+ epochs)
-- Wait for training to complete
+#### 4. Upload MIDI Files (Web Interface)
+1. **Click "Select MIDI Files"** in the Upload section
+2. **Navigate to `midi_files` folder** (created in step 2)
+3. **Select all .mid files** (Ctrl+A or Cmd+A to select all)
+4. **Click "Upload Files"** - wait for green success message
 
-### 4. Generate Music
-- Adjust creativity and length sliders
-- Click "Generate Music"
-- Download your AI-generated MIDI file
+#### 5. Train Your AI
+1. **Set training parameters:**
+   - Epochs: 30-40 (recommended for DNB)
+   - Batch Size: 16 (or 8 if low memory)
+2. **Click "Start Training"**
+3. **Monitor progress** - training takes 30-60 minutes
+4. **Wait for "Training completed!"** message
+
+#### 6. Generate Music
+1. **Adjust creativity slider** (0.8 recommended for DNB)
+2. **Set length** (500-800 notes for full track)
+3. **Click "Generate Music"**
+4. **Download your AI-generated DNB track!**
+
+### Alternative: Command Line Setup
+
+```bash
+# 1. Generate training data
+python run.py --create-dnb
+
+# 2. Train the model
+python run.py --mode cli --train midi_files
+
+# 3. Generate music
+python run.py --mode cli --generate --length 600 --temperature 0.8
+```
 
 ## 💻 Command Line Usage
 
@@ -193,62 +226,94 @@ Output Dense Layer → MIDI Tokens
 ## 🎓 How to Train Your AI - Complete Guide
 
 ### Quick Training (Web Interface) 🚀
-1. **Start the app**: `python run.py`
-2. **Upload MIDI files**: Drag & drop or select files
-3. **Click "Start Training"**: Use 20-40 epochs for best results
-4. **Wait for completion**: Progress bar shows real-time status
-5. **Generate music**: Adjust creativity and length sliders
+**Follow these exact steps:**
 
-### Detailed Training Steps 📚
+1. **Open Terminal/Command Prompt**
+   ```bash
+   cd C:\Users\sally\Downloads\sunoai-1.0.7-rebuild
+   ```
 
-#### Step 1: Prepare Your Data
-```bash
-# Recommended MIDI sources:
-# - Classical music (Bach, Mozart, Chopin)
-# - Video game soundtracks  
-# - Jazz standards
-# - Your own compositions
+2. **Generate DNB Training Data**
+   ```bash
+   python run.py --create-dnb
+   ```
+   ✅ Creates 112 authentic DNB tracks in `midi_files` folder
 
-# Minimum: 10 files | Recommended: 50+ files | Optimal: 100+ files
+3. **Start Web Interface**
+   ```bash
+   python run.py
+   ```
+   ✅ Opens http://localhost:5000 in your browser
+
+4. **Upload Training Files**
+   - Click "Select MIDI Files" 
+   - Browse to `midi_files` folder
+   - Select ALL .mid files (Ctrl+A)
+   - Click "Upload Files"
+   - Wait for green "Successfully uploaded" message
+
+5. **Configure Training**
+   - **Epochs:** 30-40 (for good DNB results)
+   - **Batch Size:** 16 (reduce to 8 if memory errors)
+
+6. **Start Training**
+   - Click "Start Training"
+   - Watch real-time progress bar
+   - Training time: 30-60 minutes
+   - Loss should decrease, accuracy should increase
+
+7. **Generate Music**
+   - Set **Length:** 600-800 (full track length)
+   - Set **Creativity:** 0.8 (perfect for DNB)
+   - Click "Generate Music"
+   - Download your AI DNB track!
+
+### Troubleshooting Common Issues 🔧
+
+| Problem | Solution | Command |
+|---------|----------|---------|
+| **"No MIDI files found"** | Generate training data first | `python run.py --create-dnb` |
+| **"Port 5000 in use"** | Kill other apps using port 5000 | `netstat -ano \| findstr :5000` |
+| **Memory errors** | Reduce batch size to 8 | Use web interface settings |
+| **Training too slow** | Use smaller dataset or GPU | Reduce epochs to 20 |
+| **Web interface won't start** | Check Python installation | `python --version` |
+
+### Exact File Locations 📁
+
+After setup, your folder should look like:
+```
+C:\Users\sally\Downloads\sunoai-1.0.7-rebuild\
+├── midi_files/              ← Generated DNB training data (112 files)
+│   ├── dnb_liquid_01.mid
+│   ├── dnb_neurofunk_01.mid
+│   └── ... (110 more files)
+├── models/                  ← Trained AI models (created during training)
+├── templates/
+│   └── index.html          ← Web interface
+├── run.py                  ← Main entry point
+└── requirements.txt        ← Dependencies
 ```
 
-#### Step 2: Training Parameters
-| Parameter | Beginner | Intermediate | Advanced |
-|-----------|----------|--------------|----------|
-| **Epochs** | 15-25 | 30-50 | 50-100 |
-| **Batch Size** | 8-16 | 16-32 | 32-64 |
-| **Training Time** | 15-30 min | 30-60 min | 1-3 hours |
+### Quick Commands Reference 📝
 
-#### Step 3: Monitor Training Quality
-- **Loss**: Should decrease (target: <2.0)
-- **Accuracy**: Should increase (target: >50%)
-- **Validation**: Should track training metrics
-
-### Command Line Training (Advanced) 💻
 ```bash
-# Basic training
-python run.py --mode cli --train ./midi_files
+# Essential commands (run in project folder):
 
-# Advanced training with custom parameters
-python -c "
-from music_generator import SmartMusicGenerator
-generator = SmartMusicGenerator()
-generator.train(
-    midi_files=generator.get_sample_midi_files('./midi_files'),
-    epochs=50,
-    batch_size=16,
-    validation_split=0.2
-)
-"
+# 1. Setup
+pip install -r requirements.txt
+
+# 2. Generate training data
+python run.py --create-dnb
+
+# 3. Start web interface
+python run.py
+
+# 4. Alternative: CLI training
+python run.py --mode cli --train midi_files
+
+# 5. Alternative: CLI generation  
+python run.py --mode cli --generate
 ```
-
-### Training Troubleshooting 🔧
-| Problem | Solution |
-|---------|----------|
-| Out of memory | Reduce batch size to 8 |
-| Training too slow | Use GPU or reduce epochs |
-| Poor quality output | Train longer or add more data |
-| Model not saving | Check disk space and permissions |
 
 ## 🎛️ Built-in MIDI Generator
 
