@@ -364,39 +364,54 @@ Get started instantly with our comprehensive Drum & Bass MIDI generator:
 
 ```bash
 # Generate complete DNB dataset (112 tracks across 14 subgenres)
-python dnb_midi_generator.py
+python run.py --create-dnb
 ```
 
-**Included DNB Subgenres:**
-- **Liquid DNB** - Smooth, jazzy, melodic
-- **Neurofunk** - Dark, complex, futuristic  
-- **Jump Up** - Bouncy, energetic, party-focused
-- **Jungle** - Fast breakbeats, ragga influences
-- **Techstep** - Industrial, mechanical sounds
-- **Hardstep** - Aggressive, distorted
-- **Drumfunk** - Complex drum programming
-- **Minimal DNB** - Sparse, spacious
-- **Deep DNB** - Atmospheric, rolling
-- **Darkstep** - Sinister, horror-influenced
-- **Ambient DNB** - Ethereal, atmospheric
-- **Halftime** - Modern, trap-influenced
-- **Ragga Jungle** - Caribbean-influenced
-- **Rollers** - Smooth, rolling basslines
+### Generate Hip-Hop Training Data 🎤
 
-**Features:**
-- ✅ Authentic BPM ranges (160-185 BPM)
-- ✅ Genre-specific drum patterns
-- ✅ Characteristic bass lines
-- ✅ Appropriate melodic elements
-- ✅ Atmospheric FX and pads
+Create authentic Hip-Hop tracks across all major subgenres:
+
+```bash
+# Generate complete Hip-Hop dataset (120 tracks across 20 subgenres)
+python run.py --create-hiphop
+```
+
+**Included Hip-Hop Subgenres:**
+- **Old School** - Classic 80s/90s foundation
+- **Boom Bap** - Golden age NYC sound
+- **Gangsta Rap** - West Coast G-Funk influence
+- **Trap** - Modern Atlanta-originated style
+- **Drill** - Chicago/UK aggressive style
+- **Mumble Rap** - Melodic modern style
+- **Conscious Rap** - Socially aware lyricism
+- **Jazz Rap** - Jazz-influenced sophisticated sound
+- **Experimental** - Avant-garde and abstract
+- **Phonk** - Memphis-influenced dark sound
+- **Crunk** - Heavy, aggressive party music
+- **Dirty South** - Southern bounce and swagger
+- **West Coast** - California G-Funk style
+- **East Coast** - New York boom-bap tradition
+- **UK Drill** - British drill variation
+- **Afro Trap** - African-influenced trap
+- **Cloud Rap** - Ethereal, atmospheric
+- **Horrorcore** - Dark, horror-themed
+- **Hyphy** - Bay Area party music
+- **Midwest** - Regional variations
+
+**Hip-Hop Features:**
+- ✅ Authentic BPM ranges (60-160 BPM)
+- ✅ Genre-specific drum patterns and swing
+- ✅ Characteristic bass styles (808s, walking bass, etc.)
+- ✅ Melodic elements where appropriate
+- ✅ Cultural authenticity and regional variations
 - ✅ Variable track lengths (16-64 bars)
 
-**Quick Start with DNB:**
-1. `python dnb_midi_generator.py` - Generate dataset
-2. `python run.py` - Start web interface  
-3. Upload generated files automatically
-4. Train for 30-40 epochs
-5. Generate your own DNB tracks!
+**Generate Both Datasets:**
+```bash
+# Generate both DNB and Hip-Hop training data
+python run.py --create-dnb
+python run.py --create-hiphop
+```
 
 ## 🔄 Latest Upgrades & Improvements
 

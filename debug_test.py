@@ -180,39 +180,70 @@ class ProjectDebugger:
         """Test MIDI generation and processing"""
         self.print_section("MIDI FUNCTIONALITY TESTING")
         
-        try:
-            # Test MIDI file validation in midi_files directory
-            midi_dir = Path("midi_files")
-            if midi_dir.exists():
-                midi_files = list(midi_dir.glob("*.mid"))
-                self.print_test("MIDI Files Found", "PASS", f"{len(midi_files)} files")
-                
-                # Test a few files
-                if midi_files:
+        # Test all generators
+        generators_to_test = [
+            ('dnb_midi_generator', 'DrumAndBassMIDIGenerator', 'DNB'),
+            ('hiphop_midi_generator', 'HipHopMIDIGenerator', 'Hip-Hop'),
+            ('electronic_midi_generator', 'ElectronicMIDIGenerator', 'Electronic'),
+            ('country_midi_generator', 'CountryMIDIGenerator', 'Country'),
+            ('rock_midi_generator', 'RockMIDIGenerator', 'Rock'),
+            ('futuristic_midi_generator', 'FuturisticMIDIGenerator', 'Futuristic')
+        ]
+        
+        working_generators = 0
+        total_generators = len(generators_to_test)
+        
+        for module_name, class_name, genre_name in generators_to_test:
+            try:
+                if os.path.exists(f"{module_name}.py"):
                     try:
-                        import pretty_midi
-                        test_file = midi_files[0]
-                        midi_data = pretty_midi.PrettyMIDI(str(test_file))
-                        self.print_test("MIDI File Loading", "PASS", f"Loaded {test_file.name}")
+                        module = __import__(module_name)
+                        generator_class = getattr(module, class_name)
+                        generator = generator_class()
+                        self.print_test(f"{genre_name} Generator", "PASS", "Generator class available")
+                        working_generators += 1
                     except Exception as e:
-                        self.print_test("MIDI File Loading", "FAIL", str(e))
-                        self.results["issues"].append(f"MIDI loading error: {e}")
+                        self.print_test(f"{genre_name} Generator", "FAIL", str(e))
+                        self.results["issues"].append(f"{genre_name} generator error: {e}")
+                else:
+                    self.print_test(f"{genre_name} Generator", "SKIP", "Module file not found")
+            except Exception as e:
+                self.print_test(f"{genre_name} Generator", "FAIL", str(e))
+        
+        # Test universal generator
+        try:
+            if os.path.exists("universal_midi_generator.py"):
+                from universal_midi_generator import UniversalMIDIGenerator
+                universal = UniversalMIDIGenerator()
+                self.print_test("Universal Generator", "PASS", f"{len(universal.available_genres)} genres loaded")
             else:
-                self.print_test("MIDI Files Found", "FAIL", "No midi_files directory")
-            
-            # Test DNB generator
-            if os.path.exists("dnb_midi_generator.py"):
-                try:
-                    from dnb_midi_generator import DrumAndBassMIDIGenerator
-                    generator = DrumAndBassMIDIGenerator()
-                    self.print_test("DNB Generator Import", "PASS", "Generator class available")
-                except Exception as e:
-                    self.print_test("DNB Generator Import", "FAIL", str(e))
-                    self.results["issues"].append(f"DNB generator error: {e}")
+                self.print_test("Universal Generator", "SKIP", "Module not found")
         except Exception as e:
-            self.print_test("MIDI Testing", "FAIL", str(e))
-            self.results["issues"].append(f"MIDI functionality error: {e}")
-    
+            self.print_test("Universal Generator", "FAIL", str(e))
+        
+        # Test MIDI files
+        midi_dir = Path("midi_files")
+        if midi_dir.exists():
+            midi_files = list(midi_dir.glob("*.mid"))
+            self.print_test("MIDI Files Found", "PASS", f"{len(midi_files)} files")
+            
+            # Test file loading
+            if midi_files:
+                try:
+                    import pretty_midi
+                    test_file = midi_files[0]
+                    midi_data = pretty_midi.PrettyMIDI(str(test_file))
+                    self.print_test("MIDI File Loading", "PASS", f"Loaded {test_file.name}")
+                except Exception as e:
+                    self.print_test("MIDI File Loading", "FAIL", str(e))
+        else:
+            self.print_test("MIDI Files Found", "FAIL", "No midi_files directory")
+        
+        self.results["functionality"]["midi_generators"] = {
+            "working": working_generators,
+            "total": total_generators
+        }
+
     def test_ai_functionality(self):
         """Test AI model functionality"""
         self.print_section("AI MODEL TESTING")

@@ -24,43 +24,56 @@ def main():
     parser.add_argument('--length', type=int, default=500, help='Length of generated music')
     parser.add_argument('--temperature', type=float, default=0.8, help='Generation temperature')
     parser.add_argument('--create-dnb', action='store_true', help='Generate DNB training dataset')
+    parser.add_argument('--create-hiphop', action='store_true', help='Generate Hip-Hop training dataset')
+    parser.add_argument('--create-electronic', action='store_true', help='Generate Electronic training dataset')
+    parser.add_argument('--create-country', action='store_true', help='Generate Country training dataset')
+    parser.add_argument('--create-rock', action='store_true', help='Generate Rock training dataset')
+    parser.add_argument('--create-futuristic', action='store_true', help='Generate Futuristic training dataset')
+    parser.add_argument('--create-all', action='store_true', help='Generate ALL music training datasets')
     parser.add_argument('--debug', action='store_true', help='Run comprehensive debug test')
     parser.add_argument('--test', action='store_true', help='Run system tests')
     
     args = parser.parse_args()
     
-    # Handle debug testing
-    if args.debug or args.test:
-        print("🔍 Running comprehensive debug and test...")
+    # Handle universal dataset generation
+    if args.create_all:
+        print("🌍 Generating UNIVERSAL training dataset (all genres)...")
         try:
-            from debug_test import ProjectDebugger
-            debugger = ProjectDebugger()
-            success = debugger.run_full_test()
-            
+            from universal_midi_generator import main as generate_all
+            success = generate_all()
             if success:
-                print("\n✅ All tests passed!")
-            else:
-                print("\n⚠️ Issues found. Check the report above.")
-            return
-        except ImportError as e:
-            print(f"❌ Debug test not available: {e}")
-            return
-    
-    # Handle DNB dataset generation
-    if args.create_dnb:
-        print("Generating Drum & Bass training dataset...")
-        try:
-            from dnb_midi_generator import main as generate_dnb
-            success = generate_dnb()
-            if success:
-                print("\nDataset generated successfully!")
+                print("\n✅ Universal dataset generated successfully!")
+                print("🎯 You now have the most comprehensive music training dataset!")
                 print("Run 'python run.py' to start training")
             else:
-                print("\nDataset generation failed. Check the error messages above.")
+                print("\n❌ Universal dataset generation had issues. Check output above.")
             return
         except ImportError as e:
-            print(f"Error: Could not import DNB generator: {e}")
+            print(f"❌ Error: Could not import Universal generator: {e}")
             return
+    
+    # Handle individual genre generation
+    genre_handlers = {
+        'create_electronic': ('electronic_midi_generator', 'Electronic'),
+        'create_country': ('country_midi_generator', 'Country'),
+        'create_rock': ('rock_midi_generator', 'Rock'),
+        'create_futuristic': ('futuristic_midi_generator', 'Futuristic')
+    }
+    
+    for arg, (module, genre_name) in genre_handlers.items():
+        if getattr(args, arg.replace('-', '_')):
+            print(f"🎵 Generating {genre_name} training dataset...")
+            try:
+                generator_module = __import__(module)
+                success = generator_module.main()
+                if success:
+                    print(f"\n✅ {genre_name} dataset generated successfully!")
+                else:
+                    print(f"\n❌ {genre_name} dataset generation failed.")
+                return
+            except ImportError as e:
+                print(f"❌ Error: Could not import {genre_name} generator: {e}")
+                return
     
     if args.mode == 'web':
         print("Smart Music Generator AI - Web Interface")

@@ -38,7 +38,7 @@
   "files": {
     "run.py": {
       "exists": true,
-      "size": 5052
+      "size": 6300
     },
     "music_generator.py": {
       "exists": true,
@@ -62,7 +62,7 @@
     },
     "README.md": {
       "exists": true,
-      "size": 13065
+      "size": 13553
     },
     "templates": {
       "exists": true,
@@ -94,7 +94,12 @@
       "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
     }
   },
-  "functionality": {},
+  "functionality": {
+    "midi_generators": {
+      "working": 0,
+      "total": 6
+    }
+  },
   "performance": {},
   "issues": [
     "Missing dependency: numpy",
@@ -106,8 +111,12 @@
     "Module import error: midi_processor - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
     "Module import error: web_interface - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
     "Module import error: dnb_midi_generator - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
-    "MIDI loading error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
     "DNB generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Hip-Hop generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Electronic generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Country generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Rock generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Futuristic generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
     "AI generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
     "Web interface error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
   ],
