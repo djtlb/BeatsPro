@@ -679,7 +679,9 @@ class NeuralMusicAI:
             right = np.roll(right, delay_samples)
             
         # High-frequency enhancement for right channel
-        b, a = signal.butter(2, 5000, 'highpass', fs=self.sr)
+        nyquist = self.sr / 2
+        cutoff = min(5000, nyquist * 0.9)  # Ensure cutoff is below Nyquist
+        b, a = signal.butter(2, cutoff / nyquist, 'highpass')
         right = signal.filtfilt(b, a, right) * 0.1 + right * 0.9
         
         return np.column_stack([left, right])
