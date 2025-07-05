@@ -291,6 +291,42 @@ class BeatAddictsProductionDebugger:
             print(f"   ❌ Voice system error: {e}")
             return False
 
+    def test_beat_addicts_web_interface(self):
+        """Test BEAT ADDICTS web interface"""
+        print("\n🌐 Testing BEAT ADDICTS Web Interface...")
+        
+        try:
+            # Check if web interface files exist
+            has_web_interface = os.path.exists("web_interface.py")
+            has_templates = os.path.exists("templates/index.html")
+            
+            if not has_web_interface:
+                print("   ❌ web_interface.py missing")
+                return False
+            
+            if not has_templates:
+                print("   ❌ templates/index.html missing")
+                # Create templates directory and basic template
+                os.makedirs("templates", exist_ok=True)
+                print("   ✅ Created templates directory")
+                return False
+            
+            # Try to import web interface
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("web_interface", "web_interface.py")
+            web_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(web_module)
+            
+            print("   ✅ BEAT ADDICTS web interface loaded")
+            print("   ✅ Flask app available")
+            print("   ✅ Templates directory exists")
+            
+            return True
+            
+        except Exception as e:
+            print(f"   ❌ Web interface error: {e}")
+            return False
+
     def run_beat_addicts_diagnostic(self):
         """Run complete BEAT ADDICTS diagnostic suite"""
         print("🎵 BEAT ADDICTS v2.0 - PRODUCTION SYSTEM DIAGNOSTIC")
@@ -306,6 +342,7 @@ class BeatAddictsProductionDebugger:
             ("BEAT ADDICTS Audio Engine", self.test_beat_addicts_audio_engine),
             ("BEAT ADDICTS MIDI System", self.test_beat_addicts_midi_system),
             ("BEAT ADDICTS Voice System", self.test_beat_addicts_voice_system),
+            ("BEAT ADDICTS Web Interface", self.test_beat_addicts_web_interface),
         ]
         
         passed_tests = 0

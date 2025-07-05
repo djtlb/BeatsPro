@@ -10,6 +10,7 @@ import json
 import time
 from pathlib import Path
 from typing import List, Dict, Any
+import pretty_midi
 
 class UniversalMIDIGenerator:
     """Manages all genre-specific MIDI generators"""
@@ -68,16 +69,16 @@ class UniversalMIDIGenerator:
             try:
                 print(f"\n🎼 Generating {genre.upper()} dataset...")
                 generator = self.generators[genre]
-                
                 files = generator.generate_training_dataset(
                     output_dir=output_dir,
                     tracks_per_subgenre=tracks_per_subgenre
                 )
                 
+                # Initialize enhanced_files to avoid unbound error
+                enhanced_files = []
                 # Apply voice assignment to generated files if available
                 if use_voice_assignment and files:
                     print(f"🎛️ Applying voice assignment to {genre} tracks...")
-                    enhanced_files = []
                     
                     for file_path in files[:5]:  # Enhance first 5 files as examples
                         try:
@@ -100,6 +101,7 @@ class UniversalMIDIGenerator:
                     'files_generated': len(files),
                     'status': 'success',
                     'voice_enhanced': len(enhanced_files) if use_voice_assignment else 0
+                }
                 }
                 
                 print(f"✅ {genre.upper()}: {len(files)} files generated")

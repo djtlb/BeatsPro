@@ -138,272 +138,272 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-            margin: 15px 0;
-            font-weight: 500;
         }
         
-        .success { 
-            background: rgba(76, 175, 80, 0.3); 
-            border-left: 4px solid #4CAF50;
-        }
-        
-        .error { 
-            background: rgba(244, 67, 54, 0.3); 
-            border-left: 4px solid #f44336;
-        }
-        
-        .info { 
-            background: rgba(33, 150, 243, 0.3); 
-            border-left: 4px solid #2196F3;
-        }
-        
-        .warning {
-            background: rgba(255, 152, 0, 0.3);
-            border-left: 4px solid #ff9800;
-        }
-        
-        .file-list {
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        
-        .file-item {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .model-info {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        
-        .range-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .range-container input[type="range"] {
-            flex: 1;
-        }
-        
-        .range-container output {
-            min-width: 40px;
-            text-align: center;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 10px;
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 5px;
-            font-weight: 600;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .log-output {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+        
+        .genre-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .genre-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4ecdc4;
+            color: #4ecdc4;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .genre-btn:hover, .genre-btn.selected {
+            background: #4ecdc4;
+            color: #1a1a2e;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎵 Smart Music Generator AI</h1>
+        <div class="header">
+            <h1>🎵 BEAT ADDICTS</h1>
+            <div class="subtitle">Professional Music Production AI</div>
+            <div class="version-badge">v{{ version }}</div>
+        </div>
         
-        <div class="grid">
-            <!-- Upload Section -->
-            <div class="section">
-                <h2>📁 Upload Training Data</h2>
-                
-                <div class="form-group">
-                    <label for="midiFiles">Select MIDI Files:</label>
-                    <input type="file" id="midiFiles" accept=".mid,.midi" multiple>
+        <div class="dashboard">
+            <div class="card">
+                <h3>🎛️ Voice Assignment Engine</h3>
+                <p>Test the professional voice assignment system with intelligent instrument selection.</p>
+                <div class="status" id="voice-status">
+                    <span class="status-indicator status-ready"></span>
+                    <span>Ready to test</span>
                 </div>
-                
-                <button onclick="uploadFiles()">Upload Files</button>
-                
-                <div id="uploadStatus"></div>
-                
-                <div class="model-info">
-                    <strong>Uploaded Files:</strong>
-                    <div id="fileList" class="file-list">Loading...</div>
-                </div>
+                <button class="btn" onclick="testVoiceSystem()">Test Voice System</button>
             </div>
             
-            <!-- Training Section -->
-            <div class="section">
-                <h2>🧠 Train Model</h2>
-                
-                <div class="form-group">
-                    <label for="epochs">Training Epochs:</label>
-                    <input type="number" id="epochs" value="20" min="5" max="100">
+            <div class="card">
+                <h3>🎵 Training Data Generator</h3>
+                <p>Generate comprehensive MIDI training datasets across all music genres.</p>
+                <div class="genre-selector">
+                    <button class="genre-btn selected" data-genre="all">All Genres</button>
+                    <button class="genre-btn" data-genre="hiphop">Hip-Hop</button>
+                    <button class="genre-btn" data-genre="electronic">Electronic</button>
+                    <button class="genre-btn" data-genre="rock">Rock</button>
+                    <button class="genre-btn" data-genre="country">Country</button>
+                    <button class="genre-btn" data-genre="dnb">DNB</button>
+                    <button class="genre-btn" data-genre="futuristic">Futuristic</button>
                 </div>
-                
-                <div class="form-group">
-                    <label for="batchSize">Batch Size:</label>
-                    <select id="batchSize">
-                        <option value="8">8 (Low memory)</option>
-                        <option value="16" selected>16 (Recommended)</option>
-                        <option value="32">32 (High memory)</option>
-                    </select>
+                <div class="status" id="generation-status">
+                    <span class="status-indicator status-ready"></span>
+                    <span>{{ status.message }}</span>
                 </div>
-                
-                <button id="trainButton" onclick="startTraining()">Start Training</button>
-                
-                <div id="trainingProgress" class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                        <div class="progress-text" id="progressText">0%</div>
-                    </div>
-                    <div id="trainingStatus" class="status info">Initializing...</div>
+                <div class="progress-bar" style="display: none;" id="progress-container">
+                    <div class="progress-fill" id="progress-bar"></div>
                 </div>
-                
-                <div class="model-info">
-                    <div id="modelInfo">Loading model info...</div>
-                </div>
+                <button class="btn" onclick="generateTrainingData()" id="generate-btn">Generate Training Data</button>
             </div>
             
-            <!-- Generation Section -->
-            <div class="section">
-                <h2>🎼 Generate Music</h2>
-                
-                <div class="form-group">
-                    <label for="style">Style Prompt (Optional):</label>
-                    <input type="text" id="style" placeholder="e.g., classical, upbeat, melancholic">
+            <div class="card">
+                <h3>📊 System Status</h3>
+                <p>Monitor BEAT ADDICTS system health and performance.</p>
+                <div id="system-info">
+                    <div>Loading system information...</div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="length">Length (Notes):</label>
-                    <div class="range-container">
-                        <input type="range" id="length" min="100" max="1500" value="500" 
-                               oninput="this.nextElementSibling.value = this.value">
-                        <output>500</output>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="temperature">Creativity:</label>
-                    <div class="range-container">
-                        <input type="range" id="temperature" min="0.1" max="2.0" step="0.1" value="0.8" 
-                               oninput="this.nextElementSibling.value = this.value">
-                        <output>0.8</output>
-                    </div>
-                    <small>Lower = More conservative, Higher = More creative</small>
-                </div>
-                
-                <button id="generateButton" onclick="generateMusic()">Generate Music</button>
-                
-                <div id="generationResult"></div>
+                <button class="btn" onclick="refreshSystemInfo()">Refresh Status</button>
             </div>
+        </div>
+        
+        <div class="log-output" id="log-output" style="display: none;">
+            <div id="log-content">🎵 BEAT ADDICTS Studio initialized...</div>
+        </div>
+        
+        <div class="footer">
+            <p>🔥 BEAT ADDICTS - Professional Music Production AI 🔥</p>
+            <p>Made with ❤️ for music producers and beat makers worldwide</p>
         </div>
     </div>
 
     <script>
-        let trainingInterval;
-        let isTraining = false;
-
-        // Load initial data
+        let selectedGenre = 'all';
+        
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            loadFileList();
-            loadModelInfo();
+            refreshSystemInfo();
+            setupGenreSelector();
+            startStatusPolling();
         });
-
-        function uploadFiles() {
-            const fileInput = document.getElementById('midiFiles');
-            const files = fileInput.files;
-            
-            if (files.length === 0) {
-                showStatus('uploadStatus', 'Please select MIDI files to upload.', 'error');
-                return;
-            }
-            
-            const formData = new FormData();
-            for (let file of files) {
-                formData.append('files', file);
-            }
-            
-            showStatus('uploadStatus', 'Uploading files...', 'info');
-            
-            fetch('/upload_midi', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                let message = '';
-                let type = 'info';
-                
-                if (data.success) {
-                    message += data.success;
-                    type = 'success';
-                }
-                
-                if (data.warnings) {
-                    message += '\n\nWarnings:\n' + data.warnings.join('\n');
-                    type = 'warning';
-                }
-                
-                if (data.error) {
-                    message = data.error;
-                    type = 'error';
-                }
-                
-                showStatus('uploadStatus', message, type);
-                loadFileList(); // Refresh file list
-            })
-            .catch(error => {
-                showStatus('uploadStatus', 'Upload failed: ' + error.message, 'error');
+        
+        function setupGenreSelector() {
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedGenre = this.dataset.genre;
+                });
             });
         }
-
-        function startTraining() {
-            if (isTraining) return;
+        
+        function testVoiceSystem() {
+            updateStatus('voice-status', 'running', 'Testing BEAT ADDICTS Voice System...');
+            log('🎛️ Testing BEAT ADDICTS Voice Assignment Engine...');
             
-            const epochs = document.getElementById('epochs').value;
-            const batchSize = document.getElementById('batchSize').value;
-            
-            const formData = new FormData();
-            formData.append('epochs', epochs);
-            formData.append('batch_size', batchSize);
-            
-            fetch('/train', {
+            fetch('/api/test-voice-system', {
                 method: 'POST',
-                body: formData
+                headers: {'Content-Type': 'application/json'}
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    isTraining = true;
-                    document.getElementById('trainButton').disabled = true;
-                    document.getElementById('trainingProgress').style.display = 'block';
-                    startTrainingStatusCheck();
+                if (data.status === 'success') {
+                    updateStatus('voice-status', 'ready', data.message);
+                    log('✅ Voice System Test Results:');
+                    data.test_results.forEach(result => {
+                        log(`   ${result.genre.toUpperCase()}: Program ${result.program}, Channel ${result.channel}`);
+                    });
                 } else {
-                    showStatus('trainingStatus', data.error, 'error');
+                    updateStatus('voice-status', 'error', data.message);
+                    log('❌ ' + data.message);
                 }
             })
             .catch(error => {
-                showStatus('trainingStatus', 'Failed to start training: ' + error.message, 'error');
+                updateStatus('voice-status', 'error', 'Test failed');
+                log('❌ Voice system test failed: ' + error);
             });
         }
-
-        function startTrainingStatusCheck() {
-            trainingInterval = setInterval(() => {
-                fetch('/training_status')
+        
+        function generateTrainingData() {
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            updateStatus('generation-status', 'running', `Generating BEAT ADDICTS ${selectedGenre.toUpperCase()} data...`);
+            document.getElementById('progress-container').style.display = 'block';
+            log(`🎵 Starting BEAT ADDICTS ${selectedGenre.toUpperCase()} training data generation...`);
+            
+            fetch('/api/generate-training-data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    genre: selectedGenre,
+                    tracks: 4
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    log('✅ ' + data.message);
+                } else {
+                    throw new Error(data.error || 'Generation failed');
+                }
+            })
+            .catch(error => {
+                updateStatus('generation-status', 'error', 'Generation failed');
+                log('❌ Generation failed: ' + error);
+                btn.disabled = false;
+                btn.textContent = 'Generate Training Data';
+                document.getElementById('progress-container').style.display = 'none';
+            });
+        }
+        
+        function refreshSystemInfo() {
+            fetch('/api/system-info')
+            .then(response => response.json())
+            .then(data => {
+                const infoDiv = document.getElementById('system-info');
+                infoDiv.innerHTML = `
+                    <div><strong>Version:</strong> BEAT ADDICTS v${data.beat_addicts_version}</div>
+                    <div><strong>Python:</strong> ${data.python_version}</div>
+                    <div><strong>Platform:</strong> ${data.platform}</div>
+                    <div><strong>MIDI Files:</strong> ${data.midi_files_count}</div>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('system-info').innerHTML = 'Error loading system info';
+            });
+        }
+        
+        function startStatusPolling() {
+            setInterval(() => {
+                fetch('/api/status')
                 .then(response => response.json())
                 .then(data => {
-                    updateTrainingProgress(data);
+                    const genStatus = data.generation_status;
                     
-                    if (!data.is_training) {
-                        clearInterval(trainingInterval);
-                        isTraining = false;
-                        document.getElementById('trainButton').disabled = false;
-                        
-                        if (data.progress === 100) {
-                            loadModelInfo(); // Refresh model info
-                        }
+                    if (genStatus.running) {
+                        updateProgress(genStatus.progress);
+                        updateStatus('generation-status', 'running', genStatus.message);
+                    } else if (genStatus.progress === 100) {
+                        updateStatus('generation-status', 'ready', genStatus.message);
+                        document.getElementById('generate-btn').disabled = false;
+                        document.getElementById('generate-btn').textContent = 'Generate Training Data';
+                        setTimeout(() => {
+                            document.getElementById('progress-container').style.display = 'none';
+                        }, 3000);
                     }
                 })
-                .catch(error => {
+                .catch(error => console.error('Status polling error:', error));
+            }, 2000);
+        }
+        
+        function updateStatus(elementId, status, message) {
+            const statusEl = document.getElementById(elementId);
+            const indicator = statusEl.querySelector('.status-indicator');
+            const text = statusEl.querySelector('span:last-child');
+            
+            indicator.className = `status-indicator status-${status}`;
+            text.textContent = message;
+        }
+        
+        function updateProgress(percent) {
+            document.getElementById('progress-bar').style.width = percent + '%';
+        }
+        
+        function log(message) {
+            const logOutput = document.getElementById('log-output');
+            const logContent = document.getElementById('log-content');
+            
+            logOutput.style.display = 'block';
+            logContent.innerHTML += '<br>' + new Date().toLocaleTimeString() + ' - ' + message;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+    </script>
+</body>
+</html>
                     console.error('Error checking training status:', error);
                 });
             }, 2000);
