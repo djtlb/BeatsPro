@@ -1,34 +1,42 @@
 # 🎵 BEAT ADDICTS v2.0 - Professional Music Production AI Dependencies
-# Optimized for professional music generation
+# Optimized for professional music generation and easy installation
 
-# Core web framework for BEAT ADDICTS Studio
+# Core web framework for BEAT ADDICTS Studio (MINIMAL REQUIRED)
 flask==3.0.0
 werkzeug==3.0.1
 jinja2==3.1.2
 
-# Scientific computing stack (compatible versions)
-numpy==1.26.4
-scipy==1.11.4
+# BEAT ADDICTS specific optimizations
+colorama==0.4.6          # For colored terminal output
+tqdm==4.66.1             # Progress bars for generation
 
-# Professional MIDI processing for BEAT ADDICTS
-pretty_midi==0.2.10
-mido==1.3.2
+# Essential: Clean numpy installation (fixes ~umpy corruption)
+numpy==1.26.4            # Fixed version to resolve ~umpy corruption
 
-# AI/ML framework for BEAT ADDICTS neural networks  
-tensorflow==2.15.0
-numba==0.60.0
+# Optional: Scientific computing stack (install if needed)
+# scipy==1.11.4
 
-# Audio processing for BEAT ADDICTS sound engine
-librosa==0.10.1
-soundfile==0.12.1
+# Optional: Professional MIDI processing for BEAT ADDICTS
+# pretty_midi==0.2.10
+# mido==1.3.2
 
-# Music theory for BEAT ADDICTS professional features
-music21==9.1.0
+# Optional: AI/ML framework for BEAT ADDICTS neural networks  
+# tensorflow==2.15.0
+# numba==0.60.0
 
-# Additional utilities for BEAT ADDICTS
-scikit-learn==1.3.2
-matplotlib==3.8.2
-psutil==5.9.6
+# Optional: Audio processing for BEAT ADDICTS sound engine
+# librosa==0.10.1
+# soundfile==0.12.1
+
+# Optional: Music theory for BEAT ADDICTS professional features
+# music21==9.1.0
+
+# Optional: Additional utilities for BEAT ADDICTS
+# scikit-learn==1.3.2
+# matplotlib==3.8.2
+# psutil==5.9.6
+# requests==2.31.0
+# pillow==10.1.0
 
 # Development tools
-pytest==7.4.3
+# pytest==7.4.3
