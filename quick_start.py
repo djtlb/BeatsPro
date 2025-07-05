@@ -59,8 +59,28 @@ def main():
     # Check if we're in the right directory
     if not os.path.exists("run.py"):
         print("\n❌ Error: Please run this script from the project directory")
-        print("Navigate to your project directory (e.g., 'cd path/to/sunoai-1.0.7-rebuild')")
+        print("Navigate to: C:\\Users\\sally\\Downloads\\sunoai-1.0.7-rebuild")
         return False
+    
+    # Option to run debug test first
+    print("\n" + "="*60)
+    run_debug = input("Run comprehensive debug test first? (recommended) (y/n): ").lower().strip()
+    
+    if run_debug in ['y', 'yes']:
+        print("\n🔍 Running debug test...")
+        try:
+            from debug_test import ProjectDebugger
+            debugger = ProjectDebugger()
+            debug_success = debugger.run_full_test()
+            
+            if not debug_success:
+                print("\n⚠️ Debug test found issues. Continue anyway? (y/n): ", end="")
+                continue_anyway = input().lower().strip()
+                if continue_anyway not in ['y', 'yes']:
+                    print("Setup cancelled. Please fix issues first.")
+                    return False
+        except ImportError:
+            print("⚠️ Debug test not available, continuing with setup...")
     
     # Step 1: Check Python
     print_step(1, "CHECKING PYTHON INSTALLATION")
@@ -102,6 +122,21 @@ def main():
     print("3. Upload the generated MIDI files")
     print("4. Click 'Start Training' (30-40 epochs recommended)")
     print("5. Generate your first AI music!")
+    
+    # Offer to run final test
+    print("\n" + "="*60)
+    final_test = input("Run final system test? (y/n): ").lower().strip()
+    
+    if final_test in ['y', 'yes']:
+        try:
+            from debug_test import ProjectDebugger
+            debugger = ProjectDebugger()
+            debugger.test_environment()
+            debugger.test_dependencies()
+            debugger.test_file_structure()
+            print("✅ Final system test completed!")
+        except:
+            print("⚠️ Final test unavailable, but setup should be working")
     
     # Ask if user wants to start the web interface
     print("\n" + "="*60)

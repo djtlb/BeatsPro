@@ -24,8 +24,27 @@ def main():
     parser.add_argument('--length', type=int, default=500, help='Length of generated music')
     parser.add_argument('--temperature', type=float, default=0.8, help='Generation temperature')
     parser.add_argument('--create-dnb', action='store_true', help='Generate DNB training dataset')
+    parser.add_argument('--debug', action='store_true', help='Run comprehensive debug test')
+    parser.add_argument('--test', action='store_true', help='Run system tests')
     
     args = parser.parse_args()
+    
+    # Handle debug testing
+    if args.debug or args.test:
+        print("🔍 Running comprehensive debug and test...")
+        try:
+            from debug_test import ProjectDebugger
+            debugger = ProjectDebugger()
+            success = debugger.run_full_test()
+            
+            if success:
+                print("\n✅ All tests passed!")
+            else:
+                print("\n⚠️ Issues found. Check the report above.")
+            return
+        except ImportError as e:
+            print(f"❌ Debug test not available: {e}")
+            return
     
     # Handle DNB dataset generation
     if args.create_dnb:
