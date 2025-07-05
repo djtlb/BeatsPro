@@ -2,7 +2,6 @@ import numpy as np
 import soundfile as sf
 from scipy import signal
 import librosa
-
 class ModernAudioEngine:
     def __init__(self, sample_rate=44100):
         self.sr = sample_rate
@@ -42,11 +41,15 @@ class ModernAudioEngine:
         
         # High-pass filter
         sos = signal.butter(4, 8000, 'highpass', fs=self.sr, output='sos')
-        hihat = signal.sosfilt(sos, hihat)
+        hihat_filtered = signal.sosfilt(sos, hihat)
+        
+        # Ensure hihat_filtered is an array, not a tuple
+        if isinstance(hihat_filtered, tuple):
+            hihat_filtered = hihat_filtered[0]
         
         # Sharp attack, quick decay
         envelope = np.exp(-t * 30)
-        hihat *= envelope
+        hihat = hihat_filtered * envelope
         
         return self.normalize_audio(hihat)
     
@@ -56,13 +59,17 @@ class ModernAudioEngine:
         
         # Tone component (200Hz fundamental)
         tone = np.sin(2 * np.pi * 200 * t)
-        
-        # Noise component
-        noise = np.random.normal(0, 1, len(t))
-        
         # Band-pass filter for noise
         sos = signal.butter(4, [1000, 8000], 'bandpass', fs=self.sr, output='sos')
-        noise = signal.sosfilt(sos, noise)
+        noise_filtered = signal.sosfilt(sos, noise)
+        
+        # Ensure noise_filtered is an array, not a tuple
+        if isinstance(noise_filtered, tuple):
+            noise_filtered = noise_filtered[0]
+        
+        # Mix tone and noise
+        snare = 0.3 * tone + 0.7 * noise_filtered
+            noise = noise[0]
         
         # Mix tone and noise
         snare = 0.3 * tone + 0.7 * noise
