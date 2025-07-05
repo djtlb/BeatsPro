@@ -1,0 +1,18 @@
+# Absolutely minimal requirements for Smart Music Generator AI
+# These should install on any Windows system
+
+# Web framework (essential)
+flask>=2.0.0
+werkzeug>=2.0.0
+
+# Scientific computing (essential)
+numpy>=1.20.0
+
+# MIDI processing (core functionality)
+pretty_midi>=0.2.9
+mido>=1.2.0
+
+# Optional - install separately if needed
+# tensorflow>=2.8.0
+# scipy>=1.7.0
+# librosa>=0.9.0

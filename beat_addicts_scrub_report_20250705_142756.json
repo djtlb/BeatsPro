@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-05T14:27:53.386453",
+  "total_files_analyzed": 775,
+  "connections_found": 58,
+  "issues_fixed": 0,
+  "recommendations": [
+    "Use beat_addicts_launchers\\master_launcher.py as main launcher",
+    "Use beat_addicts_core\\.venv\\Lib\\site-packages\\pip\\_internal\\cli\\main.py as main entry point",
+    "Use beat_addicts_core\\web_interface.py as main web interface",
+    "Move all generators to beat_addicts_generators/ directory",
+    "Move all core modules to beat_addicts_core/ directory",
+    "Move all test files to beat_addicts_tests/ directory",
+    "Create unified requirements.txt in project root",
+    "Use music_generator_app.py as the main application launcher"
+  ],
+  "total_files": 775,
+  "categories_found": 11,
+  "duplicates_found": 97,
+  "missing_connections": 10
+}

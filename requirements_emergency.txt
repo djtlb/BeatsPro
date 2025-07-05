@@ -1,3 +1,0 @@
-# Emergency fallback requirements - bare minimum to run
-flask>=2.0.0
-werkzeug>=2.0.0

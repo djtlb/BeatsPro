@@ -1,0 +1,124 @@
+{
+  "environment": {
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "platform": "Windows",
+    "working_directory": "C:\\Users\\sally\\Downloads\\sunoai-1.0.7-rebuild",
+    "memory_gb": 11.7
+  },
+  "dependencies": {
+    "numpy": {
+      "status": "missing",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "tensorflow": {
+      "status": "missing",
+      "error": "No module named 'tensorflow'"
+    },
+    "flask": {
+      "status": "installed",
+      "version": "3.1.1"
+    },
+    "pretty_midi": {
+      "status": "missing",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "mido": {
+      "status": "installed",
+      "version": "Unknown"
+    },
+    "scipy": {
+      "status": "missing",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "librosa": {
+      "status": "installed",
+      "version": "0.11.0"
+    }
+  },
+  "files": {
+    "run.py": {
+      "exists": true,
+      "size": 6300
+    },
+    "music_generator.py": {
+      "exists": true,
+      "size": 26621
+    },
+    "midi_processor.py": {
+      "exists": true,
+      "size": 20268
+    },
+    "web_interface.py": {
+      "exists": true,
+      "size": 9952
+    },
+    "dnb_midi_generator.py": {
+      "exists": true,
+      "size": 25969
+    },
+    "requirements.txt": {
+      "exists": true,
+      "size": 489
+    },
+    "README.md": {
+      "exists": true,
+      "size": 13553
+    },
+    "templates": {
+      "exists": true,
+      "file_count": 1
+    },
+    "models": {
+      "exists": false
+    },
+    "midi_files": {
+      "exists": true,
+      "file_count": 113
+    }
+  },
+  "modules": {
+    "music_generator": {
+      "status": "error",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "midi_processor": {
+      "status": "error",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "web_interface": {
+      "status": "error",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    },
+    "dnb_midi_generator": {
+      "status": "error",
+      "error": "Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+    }
+  },
+  "functionality": {
+    "midi_generators": {
+      "working": 0,
+      "total": 6
+    }
+  },
+  "performance": {},
+  "issues": [
+    "Missing dependency: numpy",
+    "Missing dependency: tensorflow",
+    "Missing dependency: pretty_midi",
+    "Missing dependency: scipy",
+    "Missing directory: models",
+    "Module import error: music_generator - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Module import error: midi_processor - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Module import error: web_interface - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Module import error: dnb_midi_generator - Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "DNB generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Hip-Hop generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Electronic generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Country generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Rock generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Futuristic generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "AI generator error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there.",
+    "Web interface error: Error importing numpy: you should not try to import numpy from\n        its source directory; please exit the numpy source tree, and relaunch\n        your python interpreter from there."
+  ],
+  "recommendations": []
+}

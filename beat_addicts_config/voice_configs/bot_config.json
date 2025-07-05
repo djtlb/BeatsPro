@@ -1,0 +1,48 @@
+{
+  "bot_settings": {
+    "auto_mode": true,
+    "default_duration": 12.0,
+    "tracks_per_session": 4,
+    "quality_mode": "high",
+    "export_format": "wav",
+    "sample_rate": 48000
+  },
+  "production_presets": {
+    "hyperpop_2025": {
+      "description": "Ultra-modern hyperpop with heavy processing",
+      "energy": 0.95,
+      "complexity": 0.8,
+      "modern_factor": 1.0
+    },
+    "drill_uk": {
+      "description": "UK drill style with hard 808s",
+      "energy": 0.85,
+      "complexity": 0.6,
+      "modern_factor": 0.9
+    },
+    "phonk_wave": {
+      "description": "Memphis phonk with modern twist",
+      "energy": 0.75,
+      "complexity": 0.7,
+      "modern_factor": 0.8
+    },
+    "jersey_club": {
+      "description": "High-energy Jersey club beats",
+      "energy": 0.9,
+      "complexity": 0.75,
+      "modern_factor": 0.95
+    }
+  },
+  "ai_learning": {
+    "enabled": true,
+    "adaptation_rate": 0.05,
+    "memory_sessions": 10,
+    "creativity_bounds": [0.1, 1.0]
+  },
+  "output_settings": {
+    "create_subfolders": true,
+    "include_metadata": true,
+    "auto_backup": false,
+    "file_naming": "timestamp_preset"
+  }
+}

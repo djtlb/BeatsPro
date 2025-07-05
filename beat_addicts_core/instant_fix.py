@@ -13,7 +13,7 @@ def instant_fix():
     print("🔥 Fixing all issues now... 🔥")
     
     # Fix web_interface.py
-    with open("web_interface.py", "w") as f:
+    with open("web_interface.py", "w", encoding='utf-8') as f:
         f.write('''# filepath: c:\\Users\\sally\\Downloads\\sunoai-1.0.7-rebuild\\beat_addicts_core\\web_interface.py
 """🎵 BEAT ADDICTS - Working Web Interface"""
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 ''')
     
     # Fix run.py
-    with open("run.py", "w") as f:
+    with open("run.py", "w", encoding='utf-8') as f:
         f.write('''# filepath: c:\\Users\\sally\\Downloads\\sunoai-1.0.7-rebuild\\beat_addicts_core\\run.py
 #!/usr/bin/env python3
 """🎵 BEAT ADDICTS - Main Runner"""

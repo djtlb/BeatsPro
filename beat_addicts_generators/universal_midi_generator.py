@@ -95,11 +95,12 @@ class BeatAddictsUniversalGenerator:
                 if os.path.exists(voice_path):
                     import importlib.util
                     spec = importlib.util.spec_from_file_location("voice_assignment", voice_path)
-                    voice_module = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(voice_module)
-                    voice_assigner = voice_module.IntelligentVoiceAssigner()
-                    print("✅ BEAT ADDICTS Voice Assignment System loaded")
-                    break
+                    if spec and spec.loader:
+                        voice_module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(voice_module)
+                        voice_assigner = voice_module.IntelligentVoiceAssigner()
+                        print("✅ BEAT ADDICTS Voice Assignment System loaded")
+                        break
             
             use_voice_assignment = voice_assigner is not None
             if not use_voice_assignment:

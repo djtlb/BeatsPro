@@ -1,0 +1,51 @@
+{
+  "cleanup_date": "2025-07-05T14:09:14.034079",
+  "files_moved": [
+    "beat_addicts_launcher.py -> beat_addicts_launchers/",
+    "quick_start.py -> beat_addicts_launchers/",
+    "quick_start_no_venv.py -> beat_addicts_launchers/",
+    "quick_start.bat -> beat_addicts_launchers/",
+    "run_beat_addicts.py -> beat_addicts_launchers/",
+    "run_no_venv.py -> beat_addicts_launchers/",
+    "run.py -> beat_addicts_launchers/",
+    "activate_beat_addicts.bat -> beat_addicts_launchers/",
+    "master_launcher.py -> beat_addicts_launchers/",
+    "beat_addicts_voice_config.json -> beat_addicts_config/voice_configs/",
+    "beat_addicts_voice_report_electronic.json -> beat_addicts_config/voice_configs/",
+    "beat_addicts_voice_report_hiphop.json -> beat_addicts_config/voice_configs/",
+    "beat_addicts_voice_report_rock.json -> beat_addicts_config/voice_configs/",
+    "bot_config.json -> beat_addicts_config/voice_configs/",
+    "debug_production_system.py -> beat_addicts_debug/",
+    "debug_report.json -> beat_addicts_debug/",
+    "first_boot_debugger.py -> beat_addicts_debug/",
+    "auto_boot_fix.py -> beat_addicts_debug/",
+    "fix_flask_install.py -> beat_addicts_debug/",
+    "fix_permissions.py -> beat_addicts_debug/",
+    "fix_venv_permissions.py -> beat_addicts_debug/",
+    "install_beat_addicts_deps.py -> beat_addicts_debug/",
+    "output.txt -> beat_addicts_debug/",
+    "requirements.txt -> beat_addicts_config/requirements/",
+    "requirements_emergency.txt -> beat_addicts_config/requirements/",
+    "requirements_minimal.txt -> beat_addicts_config/requirements/",
+    "requirements_simple.txt -> beat_addicts_config/requirements/",
+    "constraints.txt -> beat_addicts_config/requirements/",
+    "instant_bot_lyrics_1.txt -> beat_addicts_temp/old_files/",
+    "instant_bot_track_1.wav -> beat_addicts_temp/old_files/",
+    "beat_addicts_cleanup_report_20250705_123531.json -> beat_addicts_temp/old_files/",
+    "web_interface.py -> beat_addicts_temp/backups/ (duplicate)"
+  ],
+  "files_removed": [
+    "Duplicate: dnb_midi_generator.py",
+    "sunoai.java"
+  ],
+  "directories_created": [
+    "beat_addicts_launchers",
+    "beat_addicts_config/voice_configs",
+    "beat_addicts_config/requirements",
+    "beat_addicts_debug",
+    "beat_addicts_temp/old_files",
+    "beat_addicts_temp/backups",
+    "beat_addicts_docs/reports"
+  ],
+  "errors": []
+}
