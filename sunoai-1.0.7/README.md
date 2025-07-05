@@ -1,2 +1,2 @@
-# SunoAI 1.0.7
+# BeatAddicts 0.0.1
 Self-hosted AI music generation engine.
