@@ -59,6 +59,10 @@ class ModernAudioEngine:
         
         # Tone component (200Hz fundamental)
         tone = np.sin(2 * np.pi * 200 * t)
+        
+        # Generate noise
+        noise = np.random.normal(0, 1, len(t))
+        
         # Band-pass filter for noise
         sos = signal.butter(4, [1000, 8000], 'bandpass', fs=self.sr, output='sos')
         noise_filtered = signal.sosfilt(sos, noise)
@@ -69,10 +73,6 @@ class ModernAudioEngine:
         
         # Mix tone and noise
         snare = 0.3 * tone + 0.7 * noise_filtered
-            noise = noise[0]
-        
-        # Mix tone and noise
-        snare = 0.3 * tone + 0.7 * noise
         
         # Envelope
         envelope = np.exp(-t * 15)

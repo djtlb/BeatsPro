@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Music Generator AI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="file"] {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        input[type="range"] {
+            background: transparent;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid transparent;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .success { 
+            background: rgba(76, 175, 80, 0.3); 
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .error { 
+            background: rgba(244, 67, 54, 0.3); 
+            border-left: 4px solid #f44336;
+        }
+        
+        .info { 
+            background: rgba(33, 150, 243, 0.3); 
+            border-left: 4px solid #2196F3;
+        }
+        
+        .warning {
+            background: rgba(255, 152, 0, 0.3);
+            border-left: 4px solid #ff9800;
+        }
+        
+        .file-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .file-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .model-info {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .range-container input[type="range"] {
+            flex: 1;
+        }
+        
+        .range-container output {
+            min-width: 40px;
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Smart Music Generator AI</h1>
+        
+        <div class="grid">
+            <!-- Upload Section -->
+            <div class="section">
+                <h2>📁 Upload Training Data</h2>
+                
+                <div class="form-group">
+                    <label for="midiFiles">Select MIDI Files:</label>
+                    <input type="file" id="midiFiles" accept=".mid,.midi" multiple>
+                </div>
+                
+                <button onclick="uploadFiles()">Upload Files</button>
+                
+                <div id="uploadStatus"></div>
+                
+                <div class="model-info">
+                    <strong>Uploaded Files:</strong>
+                    <div id="fileList" class="file-list">Loading...</div>
+                </div>
+            </div>
+            
+            <!-- Training Section -->
+            <div class="section">
+                <h2>🧠 Train Model</h2>
+                
+                <div class="form-group">
+                    <label for="epochs">Training Epochs:</label>
+                    <input type="number" id="epochs" value="20" min="5" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="batchSize">Batch Size:</label>
+                    <select id="batchSize">
+                        <option value="8">8 (Low memory)</option>
+                        <option value="16" selected>16 (Recommended)</option>
+                        <option value="32">32 (High memory)</option>
+                    </select>
+                </div>
+                
+                <button id="trainButton" onclick="startTraining()">Start Training</button>
+                
+                <div id="trainingProgress" class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    <div id="trainingStatus" class="status info">Initializing...</div>
+                </div>
+                
+                <div class="model-info">
+                    <div id="modelInfo">Loading model info...</div>
+                </div>
+            </div>
+            
+            <!-- Generation Section -->
+            <div class="section">
+                <h2>🎼 Generate Music</h2>
+                
+                <div class="form-group">
+                    <label for="style">Style Prompt (Optional):</label>
+                    <input type="text" id="style" placeholder="e.g., classical, upbeat, melancholic">
+                </div>
+                
+                <div class="form-group">
+                    <label for="length">Length (Notes):</label>
+                    <div class="range-container">
+                        <input type="range" id="length" min="100" max="1500" value="500" 
+                               oninput="this.nextElementSibling.value = this.value">
+                        <output>500</output>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="temperature">Creativity:</label>
+                    <div class="range-container">
+                        <input type="range" id="temperature" min="0.1" max="2.0" step="0.1" value="0.8" 
+                               oninput="this.nextElementSibling.value = this.value">
+                        <output>0.8</output>
+                    </div>
+                    <small>Lower = More conservative, Higher = More creative</small>
+                </div>
+                
+                <button id="generateButton" onclick="generateMusic()">Generate Music</button>
+                
+                <div id="generationResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let trainingInterval;
+        let isTraining = false;
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFileList();
+            loadModelInfo();
+        });
+
+        function uploadFiles() {
+            const fileInput = document.getElementById('midiFiles');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                showStatus('uploadStatus', 'Please select MIDI files to upload.', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append('files', file);
+            }
+            
+            showStatus('uploadStatus', 'Uploading files...', 'info');
+            
+            fetch('/upload_midi', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = '';
+                let type = 'info';
+                
+                if (data.success) {
+                    message += data.success;
+                    type = 'success';
+                }
+                
+                if (data.warnings) {
+                    message += '\n\nWarnings:\n' + data.warnings.join('\n');
+                    type = 'warning';
+                }
+                
+                if (data.error) {
+                    message = data.error;
+                    type = 'error';
+                }
+                
+                showStatus('uploadStatus', message, type);
+                loadFileList(); // Refresh file list
+            })
+            .catch(error => {
+                showStatus('uploadStatus', 'Upload failed: ' + error.message, 'error');
+            });
+        }
+
+        function startTraining() {
+            if (isTraining) return;
+            
+            const epochs = document.getElementById('epochs').value;
+            const batchSize = document.getElementById('batchSize').value;
+            
+            const formData = new FormData();
+            formData.append('epochs', epochs);
+            formData.append('batch_size', batchSize);
+            
+            fetch('/train', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    isTraining = true;
+                    document.getElementById('trainButton').disabled = true;
+                    document.getElementById('trainingProgress').style.display = 'block';
+                    startTrainingStatusCheck();
+                } else {
+                    showStatus('trainingStatus', data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('trainingStatus', 'Failed to start training: ' + error.message, 'error');
+            });
+        }
+
+        function startTrainingStatusCheck() {
+            trainingInterval = setInterval(() => {
+                fetch('/training_status')
+                .then(response => response.json())
+                .then(data => {
+                    updateTrainingProgress(data);
+                    
+                    if (!data.is_training) {
+                        clearInterval(trainingInterval);
+                        isTraining = false;
+                        document.getElementById('trainButton').disabled = false;
+                        
+                        if (data.progress === 100) {
+                            loadModelInfo(); // Refresh model info
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking training status:', error);
+                });
+            }, 2000);
+        }
+
+        function updateTrainingProgress(data) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const statusDiv = document.getElementById('trainingStatus');
+            
+            progressFill.style.width = data.progress + '%';
+            progressText.textContent = data.progress + '%';
+            
+            let statusMessage = data.message;
+            if (data.current_epoch > 0) {
+                statusMessage += `\nLoss: ${data.loss.toFixed(4)}, Accuracy: ${(data.accuracy * 100).toFixed(2)}%`;
+            }
+            
+            statusDiv.textContent = statusMessage;
+            statusDiv.className = data.is_training ? 'status info' : 
+                                 (data.progress === 100 ? 'status success' : 'status error');
+        }
+
+        function generateMusic() {
+            const style = document.getElementById('style').value;
+            const length = document.getElementById('length').value;
+            const temperature = document.getElementById('temperature').value;
+            
+            const formData = new FormData();
+            formData.append('style', style);
+            formData.append('length', length);
+            formData.append('temperature', temperature);
+            
+            const generateButton = document.getElementById('generateButton');
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+            
+            showStatus('generationResult', 'Generating music, please wait...', 'info');
+            
+            fetch('/generate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('generationResult');
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            ${data.success}<br>
+                            <strong>File:</strong> ${data.file}<br>
+                            <strong>Size:</strong> ${(data.file_size / 1024).toFixed(1)} KB<br>
+                            <a href="${data.download_url}" download>
+                                <button style="width: auto; margin-top: 10px;">
+                                    📥 Download ${data.file}
+                                </button>
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    showStatus('generationResult', data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showStatus('generationResult', 'Generation failed: ' + error.message, 'error');
+            })
+            .finally(() => {
+                generateButton.disabled = false;
+                generateButton.textContent = 'Generate Music';
+            });
+        }
+
+        function loadFileList() {
+            fetch('/uploaded_files')
+            .then(response => response.json())
+            .then(data => {
+                const fileListDiv = document.getElementById('fileList');
+                
+                if (data.files && data.files.length > 0) {
+                    fileListDiv.innerHTML = data.files.map(file => `
+                        <div class="file-item">
+                            <span>${file.name}</span>
+                            <span>${file.size_mb} MB</span>
+                        </div>
+                    `).join('');
+                } else {
+                    fileListDiv.innerHTML = '<div class="file-item">No files uploaded yet</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('fileList').innerHTML = 
+                    '<div class="file-item">Error loading file list</div>';
+            });
+        }
+
+        function loadModelInfo() {
+            fetch('/model_info')
+            .then(response => response.json())
+            .then(data => {
+                const modelInfoDiv = document.getElementById('modelInfo');
+                
+                let info = `<strong>Model Status:</strong> ${data.trained ? 'Trained ✅' : 'Not trained ❌'}<br>`;
+                
+                if (data.vocab_size) {
+                    info += `<strong>Vocabulary Size:</strong> ${data.vocab_size}<br>`;
+                }
+                
+                info += `<strong>Model File:</strong> ${data.model_exists ? 'Exists ✅' : 'Missing ❌'}`;
+                
+                modelInfoDiv.innerHTML = info;
+                
+                // Enable/disable generate button based on model status
+                document.getElementById('generateButton').disabled = !data.trained;
+            })
+            .catch(error => {
+                document.getElementById('modelInfo').innerHTML = 
+                    '<strong>Error:</strong> Could not load model info';
+            });
+        }
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
