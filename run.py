@@ -3,11 +3,9 @@
 Smart Music Generator AI - Main Entry Point
 """
 
-import os
 import sys
 import argparse
-import glob
-
+import argparse
 # Fix encoding for Windows
 if sys.platform == "win32":
     import locale

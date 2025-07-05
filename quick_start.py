@@ -59,7 +59,7 @@ def main():
     # Check if we're in the right directory
     if not os.path.exists("run.py"):
         print("\n❌ Error: Please run this script from the project directory")
-        print("Navigate to: C:\\Users\\sally\\Downloads\\sunoai-1.0.7-rebuild")
+        print("Navigate to your project directory (e.g., 'cd path/to/sunoai-1.0.7-rebuild')")
         return False
     
     # Step 1: Check Python
@@ -80,7 +80,7 @@ def main():
     # Step 3: Generate training data
     print_step(3, "GENERATING DNB TRAINING DATA",
                "Creating 112 authentic Drum & Bass MIDI files...")
-    if not run_command("python run.py --create-dnb",
+    if not run_command(f'"{sys.executable}" run.py --create-dnb',
                       "Generate comprehensive DNB training dataset"):
         print("❌ Failed to generate training data")
         return False
@@ -122,12 +122,12 @@ def main():
             threading.Thread(target=open_browser).start()
             
             # Start the server
-            subprocess.run("python run.py", shell=True)
+            subprocess.run(f'"{sys.executable}" run.py', shell=True)
             
         except KeyboardInterrupt:
             print("\n👋 Web interface stopped. You can restart anytime with: python run.py")
     else:
-        print("\n📝 To start later, run: python run.py")
+        print(f"\n📝 To start later, run: {sys.executable} run.py")
         print("Then open: http://localhost:5000")
     
     return True
