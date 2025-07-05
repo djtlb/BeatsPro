@@ -609,10 +609,9 @@
             showLoading();
             
             const formData = {
-                theme: document.getElementById('songPrompt').value || 'love',
-                genre: document.getElementById('songGenre').value || 'pop',
-                mood: document.getElementById('songMood').value || 'happy',
-                duration: 30
+                prompt: document.getElementById('songPrompt').value,
+                genre: document.getElementById('songGenre').value,
+                mood: document.getElementById('songMood').value
             };
             
             try {
@@ -625,36 +624,35 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    const songData = result.result.metadata;
+                    const songData = result.song_data;
+                    const lyricsPreview = result.lyrics_preview;
                     
                     const content = `
                         <div class="card-title">🎵 ${songData.title}</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div><strong>Theme:</strong> ${songData.theme}</div>
                             <div><strong>Genre:</strong> ${songData.genre}</div>
                             <div><strong>Mood:</strong> ${songData.mood}</div>
-                            <div><strong>Duration:</strong> ${songData.duration}s</div>
-                            <div><strong>File:</strong> ${songData.audio_file}</div>
-                            <div><strong>Created:</strong> ${new Date(songData.created_at).toLocaleString()}</div>
+                            <div><strong>Duration:</strong> ${songData.duration_formatted}</div>
+                            <div><strong>BPM:</strong> ${songData.bpm}</div>
+                            <div><strong>Key:</strong> ${songData.key}</div>
+                            <div><strong>File Size:</strong> ${songData.file_size_mb} MB</div>
                         </div>
-                        <div style="margin-top: 1rem;"><strong>Generated Lyrics:</strong></div>
-                        <div class="lyrics-display">${songData.lyrics}</div>
-                        <div style="margin-top: 1rem;">
-                            <button class="btn btn-success" onclick="downloadSong('${songData.filename}')">
-                                <i class="fas fa-download"></i> Download Audio
-                            </button>
+                        <div><strong>Instruments:</strong> ${songData.instruments.join(', ')}</div>
+                        <div style="margin-top: 1rem;"><strong>Lyrics Preview:</strong></div>
+                        <div class="lyrics-display">${lyricsPreview.full_lyrics || `Verse: ${lyricsPreview.verse_1}\nChorus: ${lyricsPreview.chorus}\nVerse: ${lyricsPreview.verse_2}`}</div>
+                        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                            💾 Saved to: ${songData.download_location}/${songData.audio_file}
                         </div>
                     `;
                     
                     showResults(content);
                     showToast('Song generated successfully! 🎵');
                 } else {
-                    throw new Error(result.error || 'Song generation failed');
+                    throw new Error(result.message || 'Song generation failed');
                 }
             } catch (error) {
                 hideLoading();
                 showToast(`Error: ${error.message}`, 'error');
-                console.error('Song generation error:', error);
             }
         });
         
@@ -664,8 +662,10 @@
             showLoading();
             
             const formData = {
-                theme: document.getElementById('lyricsPrompt').value || 'love',
-                style: document.getElementById('lyricsStyle').value || 'modern'
+                prompt: document.getElementById('lyricsPrompt').value,
+                genre: document.getElementById('lyricsGenre').value,
+                style: document.getElementById('lyricsStyle').value,
+                num_variants: parseInt(document.getElementById('numVariants').value)
             };
             
             try {
@@ -679,25 +679,37 @@
                 
                 if (result.success) {
                     const lyrics = result.lyrics;
+                    const modelInfo = result.model_info;
                     
                     let content = `
                         <div class="card-title">🤖 AI Generated Lyrics</div>
                         <div style="margin-bottom: 1rem;">
-                            <strong>Theme:</strong> ${formData.theme} | 
-                            <strong>Style:</strong> ${formData.style}
+                            <strong>Model:</strong> ${modelInfo.model || 'AI Model'} | 
+                            <strong>Device:</strong> ${modelInfo.device || 'Unknown'}
                         </div>
-                        <div class="lyrics-display">${lyrics}</div>
                     `;
+                    
+                    if (Array.isArray(lyrics)) {
+                        lyrics.forEach((lyric, index) => {
+                            content += `
+                                <div style="margin-bottom: 1rem;">
+                                    <strong>Version ${index + 1}:</strong>
+                                    <div class="lyrics-display">${lyric}</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        content += `<div class="lyrics-display">${lyrics}</div>`;
+                    }
                     
                     showResults(content);
                     showToast('Lyrics generated successfully! ✨');
                 } else {
-                    throw new Error(result.error || 'Lyrics generation failed');
+                    throw new Error(result.message || 'Lyrics generation failed');
                 }
             } catch (error) {
                 hideLoading();
                 showToast(`Error: ${error.message}`, 'error');
-                console.error('Lyrics generation error:', error);
             }
         });
         
@@ -709,30 +721,30 @@
                 
                 const downloadsInfo = document.getElementById('downloadsInfo');
                 
-                if (result.songs && result.songs.length > 0) {
+                if (result.generated_songs && result.generated_songs.length > 0) {
                     let content = `
                         <div style="margin-top: 1rem;">
-                            <strong>Generated Songs (${result.songs.length}):</strong>
+                            <strong>Generated Songs (${result.total_songs}):</strong>
                             <div style="margin-top: 0.5rem;">
                     `;
                     
-                    result.songs.forEach(song => {
+                    result.generated_songs.forEach(song => {
                         content += `
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--dark-glass); margin-bottom: 0.5rem; border-radius: 8px;">
-                                <div>
-                                    <div><strong>${song.title}</strong></div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">
-                                        ${song.theme} • ${song.genre} • ${song.mood} • ${song.duration}s
-                                    </div>
-                                </div>
-                                <button class="btn btn-success" onclick="downloadSong('${song.filename}')" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
-                                    <i class="fas fa-download"></i>
-                                </button>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--dark-glass); margin-bottom: 0.5rem; border-radius: 8px;">
+                                <span>${song.filename}</span>
+                                <span>${song.size_mb} MB</span>
                             </div>
                         `;
                     });
                     
-                    content += `</div></div>`;
+                    content += `
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                                📁 Location: ${result.download_info.absolute_path}
+                            </div>
+                        </div>
+                    `;
+                    
                     downloadsInfo.innerHTML = content;
                 } else {
                     downloadsInfo.innerHTML = `
@@ -745,7 +757,6 @@
                 showToast('Downloads updated! 📁');
             } catch (error) {
                 showToast(`Error loading downloads: ${error.message}`, 'error');
-                console.error('Downloads error:', error);
             }
         }
         
@@ -754,7 +765,7 @@
             if (!confirm('Are you sure you want to delete all generated songs?')) return;
             
             try {
-                const response = await fetch(`${API_BASE}/clear_downloads`, {
+                const response = await fetch(`${API_BASE}/downloads/clear`, {
                     method: 'POST'
                 });
                 const result = await response.json();
@@ -762,38 +773,11 @@
                 if (result.success) {
                     document.getElementById('downloadsInfo').innerHTML = '';
                     showToast('All downloads cleared! 🗑️');
-                    viewDownloads(); // Refresh the list
                 } else {
-                    throw new Error(result.error || 'Failed to clear downloads');
+                    throw new Error(result.message || 'Failed to clear downloads');
                 }
             } catch (error) {
                 showToast(`Error: ${error.message}`, 'error');
-                console.error('Clear downloads error:', error);
-            }
-        }
-        
-        // Download individual song
-        async function downloadSong(filename) {
-            try {
-                const response = await fetch(`${API_BASE}/download/${filename}`);
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `${filename}.wav`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    showToast(`Downloading ${filename}.wav 📥`);
-                } else {
-                    throw new Error('Download failed');
-                }
-            } catch (error) {
-                showToast(`Download error: ${error.message}`, 'error');
-                console.error('Download error:', error);
             }
         }
         
@@ -801,22 +785,19 @@
         async function checkServerStatus() {
             try {
                 const response = await fetch(`${API_BASE}/`);
-                if (response.ok) {
-                    document.getElementById('serverStatus').innerHTML = `
-                        <i class="fas fa-circle"></i>
-                        <span>Server Online</span>
-                    `;
-                    document.getElementById('serverStatus').className = 'status-indicator status-online';
-                } else {
-                    throw new Error('Server responded with error');
-                }
+                const result = await response.json();
+                
+                document.getElementById('serverStatus').innerHTML = `
+                    <i class="fas fa-circle"></i>
+                    <span>Server Online</span>
+                `;
+                document.getElementById('serverStatus').className = 'status-indicator status-online';
             } catch (error) {
                 document.getElementById('serverStatus').innerHTML = `
                     <i class="fas fa-times-circle"></i>
                     <span>Server Offline</span>
                 `;
                 document.getElementById('serverStatus').className = 'status-indicator status-offline';
-                console.error('Server status check failed:', error);
             }
         }
         
