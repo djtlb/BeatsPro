@@ -3,812 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SunoAI - AI Music & Lyrics Generator 2025</title>
-    
-    <!-- Modern Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Beat Addicts - Music Generator</title>
     <style>
-        :root {
-            /* 2025 Color Palette */
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --dark-glass: rgba(0, 0, 0, 0.1);
-            
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.8);
-            --text-muted: rgba(255, 255, 255, 0.6);
-            
-            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2);
-            
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            min-height: 100vh;
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Glassmorphism Container */
-        .glass-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-soft);
-        }
-        
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .logo {
-            font-size: 3.5rem;
-            font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            animation: logoGlow 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes logoGlow {
-            0% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5)); }
-            100% { filter: drop-shadow(0 0 40px rgba(118, 75, 162, 0.8)); }
-        }
-        
-        .tagline {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-        }
-        
-        /* Main Container */
-        .container {
-            max-width: 1200px;
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b3d 100%);
+            color: white;
+            min-height: 100vh;
         }
-        
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+        .container {
+            background: rgba(42, 42, 42, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
-        
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Cards */
-        .card {
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-strong);
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary-gradient);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .card-icon {
-            font-size: 1.5rem;
-            background: var(--secondary-gradient);
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        
-        .form-input {
+        input, select, button, textarea {
             width: 100%;
-            padding: 1rem 1.5rem;
-            background: var(--dark-glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: rgba(102, 126, 234, 0.5);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
-        }
-        
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-        
-        /* Buttons */
-        .btn {
-            padding: 1rem 2rem;
+            padding: 10px;
+            margin: 10px 0;
             border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            font-size: 1rem;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: white;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            max-height: 120px;
+        }
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
             cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: var(--secondary-gradient);
-            color: white;
-        }
-        
-        .btn-success {
-            background: var(--success-gradient);
-            color: white;
-        }
-        
-        .btn:hover {
+        button:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-full {
-            width: 100%;
-        }
-        
-        /* Loading Animation */
-        .loading {
-            display: none;
+        .download-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            margin-top: 15px;
+            text-decoration: none;
+            display: inline-block;
             text-align: center;
-            padding: 2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--glass-border);
-            border-top: 3px solid var(--text-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Results */
-        .result-container {
-            margin-top: 2rem;
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #333;
+            border-radius: 5px;
             display: none;
         }
-        
-        .lyrics-display {
-            background: var(--dark-glass);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            font-family: 'JetBrains Mono', monospace;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        /* Status Indicators */
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .status-online {
-            background: var(--success-gradient);
-            color: white;
-        }
-        
-        .status-offline {
-            background: var(--glass-bg);
-            color: var(--text-muted);
-        }
-        
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-strong);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .fab:hover {
-            transform: scale(1.1);
-        }
-        
-        /* Particle Background */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-            }
-            
-            .logo {
-                font-size: 2.5rem;
-            }
-            
-            .card {
-                padding: 1.5rem;
-            }
-        }
-        
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 1rem 1.5rem;
-            color: var(--text-primary);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .toast.show {
-            transform: translateX(0);
-        }
-        
-        .toast.success {
-            border-left: 4px solid #4facfe;
-        }
-        
-        .toast.error {
-            border-left: 4px solid #f5576c;
+        .loading {
+            text-align: center;
+            color: #667eea;
         }
     </style>
 </head>
 <body>
-    <!-- Particle Background -->
-    <div class="particles" id="particles"></div>
-    
-    <!-- Header -->
-    <div class="header">
-        <h1 class="logo">🎵 SunoAI</h1>
-        <p class="tagline">Next-Gen AI Music & Lyrics Generator | 2025 Edition</p>
-        <div class="status-indicator status-online" id="serverStatus">
-            <i class="fas fa-circle"></i>
-            <span>Server Online</span>
-        </div>
-    </div>
-    
-    <!-- Main Container -->
     <div class="container">
-        <!-- Main Grid -->
-        <div class="grid">
-            <!-- Song Generator Card -->
-            <div class="card glass-container">
-                <h2 class="card-title">
-                    <i class="fas fa-music card-icon"></i>
-                    Full Song Generator
-                </h2>
-                
-                <form id="songForm">
-                    <div class="form-group">
-                        <label class="form-label" for="songPrompt">Song Idea / Prompt</label>
-                        <input type="text" id="songPrompt" class="form-input" 
-                               placeholder="e.g., A love song about dancing under the stars...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="songGenre">Genre</label>
-                        <select id="songGenre" class="form-input">
-                            <option value="">Auto-select</option>
-                            <option value="pop">Pop</option>
-                            <option value="rock">Rock</option>
-                            <option value="country">Country</option>
-                            <option value="jazz">Jazz</option>
-                            <option value="electronic">Electronic</option>
-                            <option value="hip-hop">Hip-Hop</option>
-                            <option value="classical">Classical</option>
-                            <option value="blues">Blues</option>
-                            <option value="reggae">Reggae</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="songMood">Mood</label>
-                        <select id="songMood" class="form-input">
-                            <option value="">Auto-select</option>
-                            <option value="happy">Happy</option>
-                            <option value="sad">Sad</option>
-                            <option value="energetic">Energetic</option>
-                            <option value="calm">Calm</option>
-                            <option value="romantic">Romantic</option>
-                            <option value="mysterious">Mysterious</option>
-                            <option value="epic">Epic</option>
-                            <option value="dreamy">Dreamy</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-magic"></i> Generate Complete Song
-                    </button>
-                </form>
+        <h1>� Beat Addicts</h1>
+        <p style="color: #667eea; margin-bottom: 20px; font-style: italic;">Your addiction to perfect beats starts here</p>
+        
+        <form id="songForm">
+            <input type="text" id="prompt" placeholder="What's your vibe? (e.g., 'late night city drive', 'workout energy')" required>
+            
+            <textarea id="genre" placeholder="Describe your genre/style... (e.g., 'dark electronic with heavy bass', 'acoustic folk with violin', 'trap hip-hop with 808s')" maxlength="250" required></textarea>
+            <div style="text-align: right; color: #888; font-size: 0.9em; margin-top: -5px;">
+                <span id="genreCount">0</span>/250 characters
             </div>
             
-            <!-- Lyrics Only Card -->
-            <div class="card glass-container">
-                <h2 class="card-title">
-                    <i class="fas fa-feather-alt card-icon"></i>
-                    AI Lyrics Generator
-                </h2>
-                
-                <form id="lyricsForm">
-                    <div class="form-group">
-                        <label class="form-label" for="lyricsPrompt">Lyrics Prompt</label>
-                        <input type="text" id="lyricsPrompt" class="form-input" 
-                               placeholder="e.g., Friendship and loyalty...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="lyricsGenre">Genre</label>
-                        <select id="lyricsGenre" class="form-input">
-                            <option value="">Auto-select</option>
-                            <option value="Pop">Pop</option>
-                            <option value="Rock">Rock</option>
-                            <option value="Country">Country</option>
-                            <option value="Jazz">Jazz</option>
-                            <option value="Electronic">Electronic</option>
-                            <option value="Hip-Hop">Hip-Hop</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="lyricsStyle">Style</label>
-                        <select id="lyricsStyle" class="form-input">
-                            <option value="creative">Creative</option>
-                            <option value="romantic">Romantic</option>
-                            <option value="energetic">Energetic</option>
-                            <option value="melancholic">Melancholic</option>
-                            <option value="uplifting">Uplifting</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="numVariants">Number of Variants</label>
-                        <select id="numVariants" class="form-input">
-                            <option value="1">1 Version</option>
-                            <option value="2">2 Versions</option>
-                            <option value="3">3 Versions</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-secondary btn-full">
-                        <i class="fas fa-robot"></i> Generate AI Lyrics
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Loading State -->
-        <div class="loading glass-container" id="loadingState">
-            <div class="spinner"></div>
-            <p>AI is creating your masterpiece...</p>
-        </div>
-        
-        <!-- Results Container -->
-        <div class="result-container glass-container" id="resultsContainer">
-            <h3 class="card-title">
-                <i class="fas fa-star card-icon"></i>
-                Generated Content
-            </h3>
-            <div id="resultsContent"></div>
-        </div>
-        
-        <!-- Downloads Manager -->
-        <div class="card glass-container">
-            <h2 class="card-title">
-                <i class="fas fa-download card-icon"></i>
-                Downloads Manager
-            </h2>
+            <select id="mood">
+                <option value="happy">Happy</option>
+                <option value="sad">Sad</option>
+                <option value="energetic">Energetic</option>
+                <option value="calm">Calm</option>
+                <option value="romantic">Romantic</option>
+            </select>
             
-            <div class="grid">
-                <button class="btn btn-success" onclick="viewDownloads()">
-                    <i class="fas fa-folder-open"></i> View Downloads
-                </button>
-                <button class="btn btn-secondary" onclick="clearDownloads()">
-                    <i class="fas fa-trash"></i> Clear All
-                </button>
-            </div>
+            <select id="duration">
+                <option value="60">1 Minute</option>
+                <option value="120">2 Minutes</option>
+                <option value="180" selected>3 Minutes</option>
+                <option value="240">4 Minutes</option>
+                <option value="300">5 Minutes</option>
+            </select>
             
-            <div id="downloadsInfo" style="margin-top: 1rem;"></div>
+            <button type="submit">� Drop the Beat</button>
+        </form>
+        
+        <div id="result" class="result">
+            <h3>Your Fresh Beat:</h3>
+            <div id="songDetails"></div>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <h3>� Cooking up your beat...</h3>
+            <p>The beat addiction is real - this may take a moment</p>
         </div>
     </div>
-    
-    <!-- Floating Action Button -->
-    <button class="fab" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-    
-    <!-- Toast Container -->
-    <div class="toast" id="toast"></div>
-    
+
     <script>
-        // Global variables
-        const API_BASE = 'http://127.0.0.1:5000';
-        
-        // Initialize particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-        
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.classList.add('show');
+        // Character counter for genre textarea
+        document.getElementById('genre').addEventListener('input', function(e) {
+            const count = e.target.value.length;
+            const counter = document.getElementById('genreCount');
+            counter.textContent = count;
             
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Show loading state
-        function showLoading() {
-            document.getElementById('loadingState').style.display = 'block';
-            document.getElementById('resultsContainer').style.display = 'none';
-        }
-        
-        // Hide loading state
-        function hideLoading() {
-            document.getElementById('loadingState').style.display = 'none';
-        }
-        
-        // Show results
-        function showResults(content) {
-            document.getElementById('resultsContent').innerHTML = content;
-            document.getElementById('resultsContainer').style.display = 'block';
-            hideLoading();
-        }
-        
-        // Generate complete song
-        document.getElementById('songForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoading();
-            
-            const formData = {
-                prompt: document.getElementById('songPrompt').value,
-                genre: document.getElementById('songGenre').value,
-                mood: document.getElementById('songMood').value
-            };
-            
-            try {
-                const response = await fetch(`${API_BASE}/generate_song`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    const songData = result.song_data;
-                    const lyricsPreview = result.lyrics_preview;
-                    
-                    const content = `
-                        <div class="card-title">🎵 ${songData.title}</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                            <div><strong>Genre:</strong> ${songData.genre}</div>
-                            <div><strong>Mood:</strong> ${songData.mood}</div>
-                            <div><strong>Duration:</strong> ${songData.duration_formatted}</div>
-                            <div><strong>BPM:</strong> ${songData.bpm}</div>
-                            <div><strong>Key:</strong> ${songData.key}</div>
-                            <div><strong>File Size:</strong> ${songData.file_size_mb} MB</div>
-                        </div>
-                        <div><strong>Instruments:</strong> ${songData.instruments.join(', ')}</div>
-                        <div style="margin-top: 1rem;"><strong>Lyrics Preview:</strong></div>
-                        <div class="lyrics-display">${lyricsPreview.full_lyrics || `Verse: ${lyricsPreview.verse_1}\nChorus: ${lyricsPreview.chorus}\nVerse: ${lyricsPreview.verse_2}`}</div>
-                        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
-                            💾 Saved to: ${songData.download_location}/${songData.audio_file}
-                        </div>
-                    `;
-                    
-                    showResults(content);
-                    showToast('Song generated successfully! 🎵');
-                } else {
-                    throw new Error(result.message || 'Song generation failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showToast(`Error: ${error.message}`, 'error');
+            // Change color based on character count
+            if (count > 200) {
+                counter.style.color = '#ff6b6b';
+            } else if (count > 150) {
+                counter.style.color = '#ffd93d';
+            } else {
+                counter.style.color = '#888';
             }
         });
-        
-        // Generate lyrics only
-        document.getElementById('lyricsForm').addEventListener('submit', async (e) => {
+
+        document.getElementById('songForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            showLoading();
             
-            const formData = {
-                prompt: document.getElementById('lyricsPrompt').value,
-                genre: document.getElementById('lyricsGenre').value,
-                style: document.getElementById('lyricsStyle').value,
-                num_variants: parseInt(document.getElementById('numVariants').value)
-            };
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const songDetails = document.getElementById('songDetails');
+            
+            // Show loading
+            loading.style.display = 'block';
+            result.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE}/generate_lyrics`, {
+                const response = await fetch('/drop_beat', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: document.getElementById('prompt').value,
+                        genre: document.getElementById('genre').value,
+                        mood: document.getElementById('mood').value,
+                        duration: parseInt(document.getElementById('duration').value)
+                    })
                 });
                 
-                const result = await response.json();
+                const data = await response.json();
                 
-                if (result.success) {
-                    const lyrics = result.lyrics;
-                    const modelInfo = result.model_info;
-                    
-                    let content = `
-                        <div class="card-title">🤖 AI Generated Lyrics</div>
-                        <div style="margin-bottom: 1rem;">
-                            <strong>Model:</strong> ${modelInfo.model || 'AI Model'} | 
-                            <strong>Device:</strong> ${modelInfo.device || 'Unknown'}
+                if (data.success) {
+                    const song = data.result;
+                    songDetails.innerHTML = `
+                        <h4>${song.title}</h4>
+                        <p><strong>Genre:</strong> ${song.genre}</p>
+                        <p><strong>Mood:</strong> ${song.mood}</p>
+                        <p><strong>Duration:</strong> ${song.duration} seconds</p>
+                        <p><strong>Lyrics Preview:</strong></p>
+                        <div style="background: #2a2a2a; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            ${song.lyrics}
                         </div>
+                        <p><strong>File:</strong> ${song.filename} (${song.file_size})</p>
+                        <audio controls style="width: 100%; margin: 15px 0;">
+                            <source src="/static/generated/${song.filename}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <a href="/download/${song.filename}" class="download-btn" download>
+                            🎧 Get Your Fix - ${song.filename}
+                        </a>
                     `;
-                    
-                    if (Array.isArray(lyrics)) {
-                        lyrics.forEach((lyric, index) => {
-                            content += `
-                                <div style="margin-bottom: 1rem;">
-                                    <strong>Version ${index + 1}:</strong>
-                                    <div class="lyrics-display">${lyric}</div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        content += `<div class="lyrics-display">${lyrics}</div>`;
-                    }
-                    
-                    showResults(content);
-                    showToast('Lyrics generated successfully! ✨');
+                    result.style.display = 'block';
                 } else {
-                    throw new Error(result.message || 'Lyrics generation failed');
+                    songDetails.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                    result.style.display = 'block';
                 }
             } catch (error) {
-                hideLoading();
-                showToast(`Error: ${error.message}`, 'error');
+                songDetails.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                result.style.display = 'block';
             }
-        });
-        
-        // View downloads
-        async function viewDownloads() {
-            try {
-                const response = await fetch(`${API_BASE}/downloads`);
-                const result = await response.json();
-                
-                const downloadsInfo = document.getElementById('downloadsInfo');
-                
-                if (result.generated_songs && result.generated_songs.length > 0) {
-                    let content = `
-                        <div style="margin-top: 1rem;">
-                            <strong>Generated Songs (${result.total_songs}):</strong>
-                            <div style="margin-top: 0.5rem;">
-                    `;
-                    
-                    result.generated_songs.forEach(song => {
-                        content += `
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--dark-glass); margin-bottom: 0.5rem; border-radius: 8px;">
-                                <span>${song.filename}</span>
-                                <span>${song.size_mb} MB</span>
-                            </div>
-                        `;
-                    });
-                    
-                    content += `
-                            </div>
-                            <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
-                                📁 Location: ${result.download_info.absolute_path}
-                            </div>
-                        </div>
-                    `;
-                    
-                    downloadsInfo.innerHTML = content;
-                } else {
-                    downloadsInfo.innerHTML = `
-                        <div style="margin-top: 1rem; text-align: center; color: var(--text-muted);">
-                            No songs generated yet. Create your first masterpiece! 🎵
-                        </div>
-                    `;
-                }
-                
-                showToast('Downloads updated! 📁');
-            } catch (error) {
-                showToast(`Error loading downloads: ${error.message}`, 'error');
-            }
-        }
-        
-        // Clear downloads
-        async function clearDownloads() {
-            if (!confirm('Are you sure you want to delete all generated songs?')) return;
             
-            try {
-                const response = await fetch(`${API_BASE}/downloads/clear`, {
-                    method: 'POST'
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('downloadsInfo').innerHTML = '';
-                    showToast('All downloads cleared! 🗑️');
-                } else {
-                    throw new Error(result.message || 'Failed to clear downloads');
-                }
-            } catch (error) {
-                showToast(`Error: ${error.message}`, 'error');
-            }
-        }
-        
-        // Check server status
-        async function checkServerStatus() {
-            try {
-                const response = await fetch(`${API_BASE}/`);
-                const result = await response.json();
-                
-                document.getElementById('serverStatus').innerHTML = `
-                    <i class="fas fa-circle"></i>
-                    <span>Server Online</span>
-                `;
-                document.getElementById('serverStatus').className = 'status-indicator status-online';
-            } catch (error) {
-                document.getElementById('serverStatus').innerHTML = `
-                    <i class="fas fa-times-circle"></i>
-                    <span>Server Offline</span>
-                `;
-                document.getElementById('serverStatus').className = 'status-indicator status-offline';
-            }
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            checkServerStatus();
-            viewDownloads();
-            
-            // Check server status every 30 seconds
-            setInterval(checkServerStatus, 30000);
+            loading.style.display = 'none';
         });
     </script>
 </body>

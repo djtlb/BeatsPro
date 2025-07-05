@@ -8,7 +8,7 @@ of AI models with minimal code changes.
 
 UPGRADE METHODS:
 1. Fine-tuned GPT-2 models (trained on lyrics)
-2. Larger language models (GPT-3.5, GPT-4, Claude)  
+2. Larger language models (GPT-3.5, GPT-4, Claude)
 3. Music-specialized models (MusicLM, AudioCraft)
 4. Custom trained models
 5. Multiple model ensemble
@@ -19,8 +19,10 @@ from typing import Dict, Any
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 try:
-    import openai  # Example for OpenAI models
+    import openai
 except ImportError:
+    # If openai is not installed, openai will be None.
+    # Downstream code must check if openai is None before using it.
     openai = None  # Will be None if not installed
 
 # =============================================================================
@@ -50,7 +52,7 @@ class FineTunedLyricsGenerator:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         
         # Move model to device
-        self.model.to(self.device)
+        self.model.to(self.device) # type: ignore
         self.model.eval()
 
     def generate_lyrics(self, prompt="", theme="", mood="", **kwargs):
