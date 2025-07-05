@@ -1,7 +1,7 @@
-# 🎵 BEAT ADDICTS v2.0 - Minimal Self-Contained Dependencies
-# Only essential packages with pre-cross referenced compatibility
-
-# Core web framework for BEAT ADDICTS Studio (REQUIRED)
+# 🎵 BEAT ADDICTS - Minimal Working Requirements
+flask==3.0.0
+werkzeug==3.0.1
+colorama==0.4.6
 flask==3.0.0
 werkzeug==3.0.1
 jinja2==3.1.2

@@ -260,33 +260,37 @@ class BeatAddictsProductionDebugger:
             # Import voice assignment without dependencies
             import importlib.util
             spec = importlib.util.spec_from_file_location("voice_assignment", "voice_assignment.py")
-            voice_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(voice_module)
-            
-            # Test voice assignment
-            assigner = voice_module.IntelligentVoiceAssigner()
-            print("   ✅ BEAT ADDICTS Voice Engine loaded")
-            
-            # Test voice recommendations
-            test_genres = ["hiphop", "electronic", "rock"]
-            successful_recommendations = 0
-            
-            for genre in test_genres:
-                try:
-                    recommendation = assigner.get_voice_recommendation(genre, "drums")
-                    if recommendation and "recommended_program" in recommendation:
-                        print(f"   ✅ {genre.upper()} voice: Program {recommendation['recommended_program']}")
-                        successful_recommendations += 1
-                    else:
-                        print(f"   ❌ {genre.upper()} voice: Invalid recommendation")
-                except Exception as e:
-                    print(f"   ❌ {genre.upper()} voice: {e}")
-            
-            success_rate = (successful_recommendations / len(test_genres)) * 100
-            print(f"   📊 Voice System: {successful_recommendations}/{len(test_genres)} ({success_rate:.1f}%)")
-            
-            return successful_recommendations == len(test_genres)
-            
+            if spec is not None and spec.loader is not None:
+                voice_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(voice_module)
+                
+                # Test voice assignment
+                assigner = voice_module.IntelligentVoiceAssigner()
+                print("   ✅ BEAT ADDICTS Voice Engine loaded")
+                
+                # Test voice recommendations
+                test_genres = ["hiphop", "electronic", "rock"]
+                successful_recommendations = 0
+                
+                for genre in test_genres:
+                    try:
+                        recommendation = assigner.get_voice_recommendation(genre, "drums")
+                        if recommendation and "recommended_program" in recommendation:
+                            print(f"   ✅ {genre.upper()} voice: Program {recommendation['recommended_program']}")
+                            successful_recommendations += 1
+                        else:
+                            print(f"   ❌ {genre.upper()} voice: Invalid recommendation")
+                    except Exception as e:
+                        print(f"   ❌ {genre.upper()} voice: {e}")
+                
+                success_rate = (successful_recommendations / len(test_genres)) * 100
+                print(f"   📊 Voice System: {successful_recommendations}/{len(test_genres)} ({success_rate:.1f}%)")
+                
+                return successful_recommendations == len(test_genres)
+            else:
+                print("   ❌ Could not load voice assignment module")
+                return False
+                
         except Exception as e:
             print(f"   ❌ Voice system error: {e}")
             return False

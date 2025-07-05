@@ -26,8 +26,8 @@ def run_command(command, description=""):
         print(f"Purpose: {description}")
     
     try:
-        result = subprocess.run(command, shell=True, check=True, 
-                              capture_output=True, text=True)
+        subprocess.run(command, shell=True, check=True, 
+                      capture_output=True, text=True)
         print("✅ Success!")
         return True
     except subprocess.CalledProcessError as e:
@@ -161,7 +161,7 @@ def run_comprehensive_debug():
     """Run BEAT ADDICTS comprehensive debug with self-contained dependencies"""
     try:
         # Use self-contained fix_all_problems instead of debug_test
-        from beat_addicts_core.fix_all_problems import main as fix_main
+        from beat_addicts_core.fix_all_problems import main as fix_main # type: ignore
         return fix_main()
     except ImportError:
         print("⚠️ Running basic diagnostic...")
@@ -176,7 +176,7 @@ def run_comprehensive_debug():
             print("✅ Python version compatible")
         else:
             print("❌ Python version too old")
-            return False
+        return False
         
         # Check essential files
         essential_files = ["beat_addicts_core/run.py", "beat_addicts_core/requirements.txt"]
@@ -191,7 +191,7 @@ def run_comprehensive_debug():
         
         # Check Flask availability
         try:
-            import flask
+            __import__('flask')
             print("✅ Flask available")
         except ImportError:
             print("❌ Flask not installed")
@@ -232,7 +232,8 @@ def main():
     if run_debug in ['y', 'yes']:
         print("\n🔍 Running debug test...")
         try:
-            from debug_test import ProjectDebugger
+            debug_test = __import__('debug_test')
+            ProjectDebugger = getattr(debug_test, 'ProjectDebugger')
             debugger = ProjectDebugger()
             debug_success = debugger.run_full_test()
             
@@ -242,7 +243,7 @@ def main():
                 if continue_anyway not in ['y', 'yes']:
                     print("Setup cancelled. Please fix issues first.")
                     return False
-        except ImportError:
+        except (ImportError, AttributeError):
             print("⚠️ Debug test not available, continuing with setup...")
     
     # Step 1: Check Python
@@ -314,17 +315,20 @@ def main():
     # Offer to run final test
     print("\n" + "="*60)
     final_test = input("Run final system test? (y/n): ").lower().strip()
-    
     if final_test in ['y', 'yes']:
         try:
-            from debug_test import ProjectDebugger
+            debug_test = __import__('debug_test')
+            ProjectDebugger = getattr(debug_test, 'ProjectDebugger')
             debugger = ProjectDebugger()
             debugger.test_environment()
             debugger.test_dependencies()
             debugger.test_file_structure()
             print("✅ Final system test completed!")
-        except:
-            print("⚠️ Final test unavailable, but setup should be working")
+        except (ImportError, AttributeError):
+            print("⚠️ Debug test module not found, but setup should be working")
+        except Exception as e:
+            print(f"⚠️ Final test error: {e}, but setup should be working")
+            print(f"⚠️ Final test error: {e}, but setup should be working")
     
     # Ask if user wants to start the web interface
     print("\n" + "="*60)

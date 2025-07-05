@@ -199,6 +199,10 @@ class DrumAndBassMIDIGenerator:
         drums = pretty_midi.Instrument(program=0, is_drum=True, name="Drums")
         bass = pretty_midi.Instrument(program=38, name="Bass")  # Synth Bass 1
         
+        # Initialize lead and pads as None
+        lead = None
+        pads = None
+        
         # Add melodic elements if characteristic of the subgenre
         if specs.melodic_elements:
             lead = pretty_midi.Instrument(program=81, name="Lead")  # Sawtooth Lead
@@ -215,7 +219,7 @@ class DrumAndBassMIDIGenerator:
         self._generate_bass(bass, subgenre, duration_bars, bar_duration)
         
         # Add melodic elements
-        if specs.melodic_elements:
+        if specs.melodic_elements and lead is not None and pads is not None:
             self._generate_melody(lead, subgenre, duration_bars, bar_duration)
             self._generate_pads(pads, subgenre, duration_bars, bar_duration)
             midi.instruments.extend([lead, pads])
@@ -546,8 +550,8 @@ class DrumAndBassMIDIGenerator:
         # Initialize all variables to avoid unbound errors
         drums = pretty_midi.Instrument(program=0, is_drum=True, name="Drums")
         bass = pretty_midi.Instrument(program=37, is_drum=False, name="Bass")
-        lead = pretty_midi.Instrument(program=80, is_drum=False, name="Lead")  # Initialize lead
-        pads = pretty_midi.Instrument(program=89, is_drum=False, name="Pads")  # Initialize pads
+        lead = pretty_midi.Instrument(program=80, is_drum=False, name="Lead")
+        pads = pretty_midi.Instrument(program=89, is_drum=False, name="Pads")
         
         # Add all instruments to ensure they exist
         midi_file.instruments.extend([drums, bass, lead, pads])

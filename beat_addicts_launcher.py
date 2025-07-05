@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 🎵 BEAT ADDICTS v2.0 - Main Launcher
-Professional Music Production AI System Launcher
+Professional Music Production AI System Launcher - Fixed Version
 """
 
 import os
 import sys
-import argparse
+import subprocess
 
 def main():
     """Main BEAT ADDICTS launcher that works from any directory"""
@@ -27,20 +27,8 @@ def main():
             os.chdir(core_dir)
             print(f"📁 Switched to: {core_dir}")
             
-            # Add current directory to path
-            sys.path.insert(0, core_dir)
-            
-            # Import and run from organized structure
-            from run import main as core_main
-            return core_main()
-            
-        except ImportError as e:
-            print(f"❌ Error importing BEAT ADDICTS core: {e}")
-            print("Trying alternative method...")
-            
-            # Alternative: run as subprocess
-            import subprocess
-            result = subprocess.run([sys.executable, 'run.py'] + sys.argv[1:])
+            # Run directly as subprocess to avoid import issues
+            result = subprocess.run([sys.executable, 'run.py'])
             return result.returncode == 0
             
         except Exception as e:
@@ -49,13 +37,17 @@ def main():
         finally:
             os.chdir(original_cwd)
     else:
-        print("⚠️ Organized structure not found, running from current directory")
+        print("⚠️ Organized structure not found, trying direct run")
         
-        # Try to run from current directory
-        try:
-            from run import main as run_main
-            return run_main()
-        except ImportError:
+        # Try current directory
+        if os.path.exists("run.py"):
+            try:
+                subprocess.run([sys.executable, "run.py"])
+                return True
+            except Exception as e:
+                print(f"❌ Could not run BEAT ADDICTS: {e}")
+                return False
+        else:
             print("❌ Could not find BEAT ADDICTS run.py")
             print("Please run from the beat_addicts_core directory:")
             print("   cd beat_addicts_core")
@@ -63,4 +55,9 @@ def main():
             return False
 
 if __name__ == "__main__":
-    main()
+    success = main()
+    if not success:
+        print("\n🔧 Troubleshooting:")
+        print("1. cd beat_addicts_core")
+        print("2. python fix_all_problems.py")
+        print("3. python run.py")
