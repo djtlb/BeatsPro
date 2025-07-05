@@ -1,0 +1,14 @@
+{
+  "title": "Romantic Pop Song #7549",
+  "genre": "pop",
+  "mood": "romantic",
+  "duration_seconds": 129,
+  "bpm": 82,
+  "key": "Fb",
+  "instruments": [
+    "piano",
+    "flute"
+  ],
+  "prompt": "A love song about coding together",
+  "created_at": "2025-07-04T19:28:59.093289"
+}

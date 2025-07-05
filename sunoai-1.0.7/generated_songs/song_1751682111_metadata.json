@@ -1,0 +1,16 @@
+{
+  "title": "Epic Rock Song #5448",
+  "genre": "rock",
+  "mood": "epic",
+  "duration_seconds": 170,
+  "bpm": 175,
+  "key": "G#",
+  "instruments": [
+    "flute",
+    "synthesizer",
+    "saxophone",
+    "bass"
+  ],
+  "prompt": "An epic adventure song about exploring space",
+  "created_at": "2025-07-04T19:21:53.359999"
+}

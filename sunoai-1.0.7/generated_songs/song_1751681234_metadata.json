@@ -1,0 +1,15 @@
+{
+  "title": "Happy Pop Song #4326",
+  "genre": "pop",
+  "mood": "happy",
+  "duration_seconds": 187,
+  "bpm": 79,
+  "key": "Ab",
+  "instruments": [
+    "drums",
+    "piano",
+    "synthesizer"
+  ],
+  "prompt": "Test download location",
+  "created_at": "2025-07-04T19:07:16.600974"
+}
