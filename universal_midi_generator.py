@@ -54,6 +54,16 @@ class UniversalMIDIGenerator:
         total_files = []
         generation_stats = {}
         
+        # Initialize voice assignment system
+        try:
+            from voice_assignment import IntelligentVoiceAssigner
+            voice_assigner = IntelligentVoiceAssigner()
+            print("✅ Voice Assignment System loaded")
+            use_voice_assignment = True
+        except ImportError:
+            print("⚠️ Voice Assignment System not available")
+            use_voice_assignment = False
+        
         for genre in self.available_genres:
             try:
                 print(f"\n🎼 Generating {genre.upper()} dataset...")
@@ -64,10 +74,32 @@ class UniversalMIDIGenerator:
                     tracks_per_subgenre=tracks_per_subgenre
                 )
                 
+                # Apply voice assignment to generated files if available
+                if use_voice_assignment and files:
+                    print(f"🎛️ Applying voice assignment to {genre} tracks...")
+                    enhanced_files = []
+                    
+                    for file_path in files[:5]:  # Enhance first 5 files as examples
+                        try:
+                            midi = pretty_midi.PrettyMIDI(file_path)
+                            enhanced_midi = voice_assigner.assign_voices_to_track(midi, genre)
+                            
+                            # Save enhanced version
+                            enhanced_path = file_path.replace('.mid', '_enhanced.mid')
+                            enhanced_midi.write(enhanced_path)
+                            enhanced_files.append(enhanced_path)
+                            
+                        except Exception as e:
+                            print(f"⚠️ Voice assignment failed for {file_path}: {e}")
+                    
+                    if enhanced_files:
+                        print(f"✅ Enhanced {len(enhanced_files)} {genre} tracks with voice assignment")
+                
                 total_files.extend(files)
                 generation_stats[genre] = {
                     'files_generated': len(files),
-                    'status': 'success'
+                    'status': 'success',
+                    'voice_enhanced': len(enhanced_files) if use_voice_assignment else 0
                 }
                 
                 print(f"✅ {genre.upper()}: {len(files)} files generated")
@@ -80,12 +112,12 @@ class UniversalMIDIGenerator:
                     'error': str(e)
                 }
         
-        # Generate comprehensive summary
-        self._generate_universal_summary(output_dir, total_files, generation_stats)
+        # Generate comprehensive summary with voice assignment info
+        self._generate_universal_summary(output_dir, total_files, generation_stats, use_voice_assignment)
         
         return total_files, generation_stats
     
-    def _generate_universal_summary(self, output_dir: str, total_files: List[str], stats: Dict[str, Any]):
+    def _generate_universal_summary(self, output_dir: str, total_files: List[str], stats: Dict[str, Any], use_voice_assignment: bool):
         """Generate comprehensive summary of all generated datasets"""
         
         summary_path = os.path.join(output_dir, "universal_dataset_summary.txt")
@@ -132,32 +164,6 @@ def main():
     
     generator = UniversalMIDIGenerator()
     
-    if not generator.available_genres:
-        print("❌ No genre generators available!")
-        print("Please ensure genre generator files are present and dependencies are installed.")
-        return False
-    
-    print(f"\n🎵 Available genres: {', '.join(generator.available_genres)}")
-    
-    # Generate comprehensive dataset
-    files, stats = generator.generate_all_datasets(
-        output_dir="midi_files",
-        tracks_per_subgenre=4  # Adjust based on your needs
-    )
-    
-    successful_genres = len([g for g, s in stats.items() if s['status'] == 'success'])
-    total_genres = len(stats)
-    
-    print(f"\n🎉 UNIVERSAL DATASET GENERATION COMPLETE!")
-    print(f"📊 Generated {len(files)} total files")
-    print(f"🎼 Success rate: {successful_genres}/{total_genres} genres")
-    print(f"📁 Files saved to: {os.path.abspath('midi_files')}")
-    print(f"\n🚀 Ready for AI training with comprehensive multi-genre dataset!")
-    
-    return len(files) > 0
-
-if __name__ == "__main__":
-    main()
     if not generator.available_genres:
         print("❌ No genre generators available!")
         print("Please ensure genre generator files are present and dependencies are installed.")

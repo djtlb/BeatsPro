@@ -266,23 +266,44 @@ class HipHopMIDIGenerator:
         # Create MIDI object
         midi = pretty_midi.PrettyMIDI(initial_tempo=bpm)
         
-        # Add instruments
+        # Add instruments with intelligent voice assignment
         drums = pretty_midi.Instrument(program=0, is_drum=True, name="Drums")
-        bass = pretty_midi.Instrument(program=33, name="Electric Bass")  # Electric Bass
+        
+        # Select bass program based on subgenre
+        bass_programs = {
+            HipHopSubgenre.TRAP: 37,  # Synth Bass 1
+            HipHopSubgenre.DRILL: 38,  # Synth Bass 2  
+            HipHopSubgenre.BOOM_BAP: 33,  # Electric Bass (finger)
+            HipHopSubgenre.JAZZ_RAP: 32,  # Acoustic Bass
+        }
+        bass_program = bass_programs.get(subgenre, 33)
+        bass = pretty_midi.Instrument(program=bass_program, name="Bass")
         
         # Add melodic elements if characteristic of the subgenre
         if specs.melodic_elements:
-            lead = pretty_midi.Instrument(program=81, name="Lead")  # Square Lead
-            pads = pretty_midi.Instrument(program=89, name="Pads")  # Warm Pad
-            piano = pretty_midi.Instrument(program=0, name="Piano")  # Acoustic Grand Piano
+            # Select lead program based on subgenre atmosphere
+            lead_programs = {
+                "modern": 81,  # Sawtooth
+                "dreamy": 89,  # Warm Pad
+                "sophisticated": 96,  # FX 1 (rain)
+                "dark": 80,  # Square
+            }
+            lead_program = lead_programs.get(specs.atmosphere, 81)
+            lead = pretty_midi.Instrument(program=lead_program, name="Lead")
+            
+            # Piano program based on subgenre
+            piano_programs = {
+                HipHopSubgenre.JAZZ_RAP: 0,  # Acoustic Grand Piano
+                HipHopSubgenre.CONSCIOUS_RAP: 1,  # Bright Acoustic Piano
+            }
+            piano_program = piano_programs.get(subgenre, 4)  # Electric Piano 1
+            piano = pretty_midi.Instrument(program=piano_program, name="Piano")
         
         # Generate sections
         bar_duration = 60 / bpm * 4  # Duration of one bar in seconds
         
-        # Generate drum track
+        # Generate tracks with intelligent voice assignment
         self._generate_hiphop_drums(drums, subgenre, duration_bars, bar_duration)
-        
-        # Generate bass track
         self._generate_hiphop_bass(bass, subgenre, duration_bars, bar_duration)
         
         # Add melodic elements
@@ -292,6 +313,8 @@ class HipHopMIDIGenerator:
             
             # Add pads for atmospheric subgenres
             if specs.atmosphere in ["dreamy", "ethereal", "sophisticated"]:
+                pad_program = 88 if specs.atmosphere == "dreamy" else 94  # String Ensemble or Halo Pad
+                pads = pretty_midi.Instrument(program=pad_program, name="Pads")
                 self._generate_hiphop_pads(pads, subgenre, duration_bars, bar_duration)
                 midi.instruments.append(pads)
             
@@ -299,7 +322,15 @@ class HipHopMIDIGenerator:
         
         midi.instruments.extend([drums, bass])
         
-        return midi
+        # Apply intelligent voice assignment
+        try:
+            from voice_assignment import IntelligentVoiceAssigner
+            assigner = IntelligentVoiceAssigner()
+            enhanced_midi = assigner.assign_voices_to_track(midi, "hiphop", subgenre.value)
+            return enhanced_midi
+        except ImportError:
+            print("⚠️ Voice assignment not available, using basic voices")
+            return midi
     
     def _generate_hiphop_drums(self, drums: pretty_midi.Instrument, subgenre: HipHopSubgenre, 
                               duration_bars: int, bar_duration: float):
