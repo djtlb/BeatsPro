@@ -162,7 +162,8 @@
                 const response = await fetch('/drop_beat', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         prompt: document.getElementById('prompt').value,
@@ -171,6 +172,10 @@
                         duration: parseInt(document.getElementById('duration').value)
                     })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 
@@ -200,7 +205,8 @@
                     result.style.display = 'block';
                 }
             } catch (error) {
-                songDetails.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Request failed:', error);
+                songDetails.innerHTML = `<p style="color: red;">Network Error: ${error.message}</p>`;
                 result.style.display = 'block';
             }
             
