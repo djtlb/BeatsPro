@@ -17,9 +17,9 @@ if errorlevel 1 (
 )
 
 echo.
-echo Starting enhanced bot system...
-python start_bot.py
+kecho Booting bot with instant launch...
+python boot_bot.py
 
 echo.
-echo Bot session finished!
+echo Bot boot sequence finished!
 pause
