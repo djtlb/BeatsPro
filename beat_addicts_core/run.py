@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-🎵 BEAT ADDICTS - Professional Music Production AI
-Main Entry Point for BEAT ADDICTS Studio
+🎵 BEAT ADDICTS - Main Entry Point
+Professional Music Production AI System
 """
 
 import os
@@ -9,13 +9,87 @@ import sys
 import argparse
 import glob
 
-# Beat Addicts encoding fix for Windows
+# Add paths for BEAT ADDICTS organized structure
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+generators_dir = os.path.join(parent_dir, 'beat_addicts_generators')
+sys.path.insert(0, current_dir)
+sys.path.insert(0, parent_dir)
+sys.path.insert(0, generators_dir)
+
+# Fix encoding for Windows
 if sys.platform == "win32":
     import locale
     try:
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
     except:
         pass
+
+def check_requirements_file():
+    """Check for requirements.txt in current directory or create it"""
+    req_file = "requirements.txt"
+    if not os.path.exists(req_file):
+        print("⚠️ Creating BEAT ADDICTS requirements.txt...")
+        create_requirements_file()
+    return req_file
+
+def create_requirements_file():
+    """Create requirements.txt file"""
+    requirements_content = """# 🎵 BEAT ADDICTS v2.0 - Professional Dependencies
+flask==3.0.0
+werkzeug==3.0.1
+jinja2==3.1.2
+numpy==1.26.4
+scipy==1.11.4
+pretty_midi==0.2.10
+mido==1.3.2
+tensorflow==2.15.0
+numba==0.60.0
+librosa==0.10.1
+soundfile==0.12.1
+music21==9.1.0
+scikit-learn==1.3.2
+matplotlib==3.8.2
+psutil==5.9.6
+pytest==7.4.3
+"""
+    with open("requirements.txt", "w") as f:
+        f.write(requirements_content)
+    print("✅ Created requirements.txt")
+
+def check_and_install_dependencies():
+    """Check and install missing dependencies"""
+    try:
+        import flask
+        import werkzeug
+        import jinja2
+        import numpy
+        import scipy
+        import pretty_midi
+        import mido
+        import tensorflow
+        import numba
+        import librosa
+        import soundfile
+        import music21
+        import sklearn
+        import matplotlib
+        import psutil
+        import pytest
+        return True
+    except ImportError as e:
+        print(f"❌ Missing dependency: {e.name}")
+        return False
+
+def try_auto_install():
+    """Attempt to automatically install missing dependencies"""
+    try:
+        import pip
+        from pip._internal.cli.main import main as pip_main
+        pip_main(['install', '-r', 'requirements.txt'])
+        print("✅ Automatically installed missing dependencies")
+    except Exception as e:
+        print(f"❌ Error during automatic installation: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description='🎵 BEAT ADDICTS - Professional Music Production AI')
@@ -42,24 +116,41 @@ def main():
     print("🎵 No more basic tools. This is BEAT ADDICTS level. 🎵")
     
     if args.mode == 'web':
-        print("🎵 BEAT ADDICTS STUDIO - Professional Music Production")
-        print("=" * 60)
-        print("🔥 BEAT ADDICTS Studio launching at: http://localhost:5000 🔥")
-        print("🎧 Professional beat making starts here 🎧")
+        print("🎵 BEAT ADDICTS - Professional Music Production AI")
+        print("=" * 50)
+        print("🔥 Beat Addicts Studio starting at: http://localhost:5000 🔥")
         print("Tip: Generate BEAT ADDICTS training data with: python run.py --create-all")
         print()
         
         try:
+            # Check requirements
+            check_requirements_file()
+            
+            # Check and install missing dependencies
+            if not check_and_install_dependencies():
+                print("Installing core dependencies...")
+                try_auto_install()
+            
+            # Check if web_interface exists or create it
+            if not os.path.exists("web_interface.py"):
+                print("⚠️ Creating BEAT ADDICTS web interface...")
+                create_web_interface()
+            
             from web_interface import app
-            # Customize app for BEAT ADDICTS branding
-            app.config['BEAT_ADDICTS_VERSION'] = '2.0'
             app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
         except ImportError as e:
-            print(f"Error: Missing BEAT ADDICTS dependencies. Please run: pip install -r requirements.txt")
+            print(f"❌ Error: Missing BEAT ADDICTS dependencies.")
             print(f"Details: {e}")
-            sys.exit(1)
+            print(f"\n🔧 BEAT ADDICTS Quick Fix:")
+            print(f"1. Install dependencies: pip install -r requirements.txt")
+            print(f"2. Or install manually: pip install flask werkzeug jinja2")
+            print(f"3. Try again: python run.py")
+            
+            # Try to install automatically
+            try_auto_install()
+            return
         except Exception as e:
-            print(f"Error starting BEAT ADDICTS Studio: {e}")
+            print(f"❌ Error starting BEAT ADDICTS web interface: {e}")
             sys.exit(1)
     else:
         print("🎵 BEAT ADDICTS CLI - Professional Music Production")
