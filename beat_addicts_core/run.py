@@ -109,11 +109,22 @@ def main():
     parser.add_argument('--test-voices', action='store_true', help='Test BEAT ADDICTS voice assignment engine')
     parser.add_argument('--debug', action='store_true', help='Run comprehensive BEAT ADDICTS debug test')
     parser.add_argument('--test', action='store_true', help='Run BEAT ADDICTS system tests')
+    parser.add_argument('--fix-problems', action='store_true', help='Run BEAT ADDICTS problem fixer')
     
     args = parser.parse_args()
     
     print("🔥 BEAT ADDICTS v2.0 - Professional Music Production AI 🔥")
-    print("🎵 No more basic tools. This is BEAT ADDICTS level. 🎵")
+    print("🎵 Organized project structure loaded 🎵")
+    
+    # Handle problem fixing
+    if args.fix_problems:
+        print("🔧 Running BEAT ADDICTS problem fixer...")
+        try:
+            from fix_all_problems import main as fix_main
+            return fix_main()
+        except ImportError as e:
+            print(f"❌ Error: Could not import problem fixer: {e}")
+            return False
     
     if args.mode == 'web':
         print("🎵 BEAT ADDICTS - Professional Music Production AI")
