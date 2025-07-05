@@ -277,6 +277,47 @@ Output Dense Layer → MIDI Tokens
 | **Memory errors** | Reduce batch size to 8 | Use web interface settings |
 | **Training too slow** | Use smaller dataset or GPU | Reduce epochs to 20 |
 | **Web interface won't start** | Check Python installation | `python --version` |
+| **Permission errors (Windows)** | Run installation fix script | `python install_fix.py` |
+| **Virtual environment issues** | Remove .venv and reinstall | `rmdir /s .venv` then reinstall |
+
+### 🚨 Installation Problems? Run This:
+
+If you get permission errors or installation failures:
+
+```bash
+# Run the installation fix tool
+python install_fix.py
+```
+
+**Alternative Solutions:**
+
+1. **Run as Administrator:**
+   ```bash
+   # Right-click Command Prompt → "Run as administrator"
+   pip install -r requirements.txt
+   ```
+
+2. **User Installation (No Admin Needed):**
+   ```bash
+   pip install --user -r requirements.txt
+   ```
+
+3. **Minimal Installation:**
+   ```bash
+   pip install -r requirements_simple.txt
+   ```
+
+4. **Remove Virtual Environment:**
+   ```bash
+   rmdir /s .venv
+   pip install -r requirements.txt
+   ```
+
+5. **Manual Package Installation:**
+   ```bash
+   pip install flask numpy pretty_midi mido
+   # Then try: python run.py
+   ```
 
 ### Exact File Locations 📁
 
