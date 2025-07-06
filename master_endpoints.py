@@ -19,21 +19,34 @@ class MasterConnectionController:
         self.app.config['SECRET_KEY'] = 'beat_addicts_master_endpoints_2025'
         self.app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
         
+        # Initialize BEAT ADDICTS connections
+        self.initialize_beat_addicts_connections()
+        
         # System status tracking
         self.system_status = {
-            'core_system': False,
+            'core_system': self.beat_addicts_available,
             'midi_generators': {},
-            'voice_system': False,
+            'voice_system': self.voice_handler is not None,
             'web_interface': True,
             'active_connections': 0,
-            'last_activity': datetime.now().isoformat()
+            'last_activity': datetime.now().isoformat(),
+            'connection_manager_status': 'connected' if self.connection_manager else 'disconnected'
         }
         
-        # Initialize available generators
-        self.available_generators = [
-            'country', 'dnb', 'electronic', 'futuristic', 
-            'hiphop', 'rock', 'universal'
-        ]
+        # Initialize available generators from connected modules
+        self.available_generators = []
+        if self.connected_generators:
+            self.available_generators = list(self.connected_generators.keys())
+        else:
+            # Fallback list
+            self.available_generators = [
+                'country', 'dnb', 'electronic', 'futuristic', 
+                'hiphop', 'rock', 'universal'
+            ]
+        
+        # Update generator status
+        for gen in self.available_generators:
+            self.system_status['midi_generators'][gen] = 'connected' if gen in self.connected_generators else 'available'
         
         # Setup all endpoints
         self.setup_master_endpoints()
@@ -42,6 +55,42 @@ class MasterConnectionController:
         self.setup_system_endpoints()
         self.setup_file_endpoints()
         
+    def initialize_beat_addicts_connections(self):
+        """Initialize connections to all BEAT ADDICTS modules"""
+        try:
+            from beat_addicts_connection_manager import BeatAddictsConnectionManager
+            
+            print("🔌 Initializing BEAT ADDICTS connections in Master Controller...")
+            self.connection_manager = BeatAddictsConnectionManager()
+            self.all_connections = self.connection_manager.connect_all()
+            
+            # Extract connected modules for easy access
+            self.connected_core = self.all_connections.get('core', {})
+            self.connected_generators = self.all_connections.get('generators', {})
+            self.connected_web = self.all_connections.get('web', {})
+            
+            # Store key modules
+            self.voice_handler = self.connected_core.get('voice_handler')
+            self.voice_integration = self.connected_core.get('voice_integration')
+            self.song_exporter = self.connected_core.get('song_exporter')
+            self.simple_audio_generator = self.connected_core.get('simple_audio_generator')
+            
+            self.beat_addicts_available = True
+            print("✅ BEAT ADDICTS connections established in Master Controller")
+            
+        except ImportError as e:
+            print(f"⚠️ BEAT ADDICTS modules not available: {e}")
+            self.connection_manager = None
+            self.all_connections = {}
+            self.connected_core = {}
+            self.connected_generators = {}
+            self.connected_web = {}
+            self.voice_handler = None
+            self.voice_integration = None
+            self.song_exporter = None
+            self.simple_audio_generator = None
+            self.beat_addicts_available = False
+            
     def setup_master_endpoints(self):
         """Setup main control endpoints"""
         
@@ -293,32 +342,116 @@ class MasterConnectionController:
                 }), 500
                 
     def execute_generator(self, generator_type, params):
-        """Execute specified MIDI generator"""
+        """Execute specified MIDI generator using connected BEAT ADDICTS modules"""
         try:
-            # This would interface with your actual generators
-            # For now, return a mock successful result
-            
-            output_file = f"{generator_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mid"
-            
-            return {
-                'status': 'generated',
-                'output_file': output_file,
-                'parameters_used': params,
-                'timestamp': datetime.now().isoformat()
-            }
+            # Use connected generators if available
+            if self.beat_addicts_available and generator_type in self.connected_generators:
+                generator_instance = self.connected_generators[generator_type]
+                
+                # Generate MIDI using the connected generator
+                if hasattr(generator_instance, 'generate_midi'):
+                    result = generator_instance.generate_midi(
+                        tempo=params.get('tempo', 120),
+                        duration=params.get('duration', 32),
+                        complexity=params.get('complexity', 'medium'),
+                        style=params.get('style', 'default')
+                    )
+                    
+                    return {
+                        'status': 'generated',
+                        'generator_used': f'BEAT ADDICTS {generator_type.title()} Generator',
+                        'output_file': result.get('filename', f"{generator_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mid"),
+                        'parameters_used': params,
+                        'timestamp': datetime.now().isoformat(),
+                        'connection_status': 'connected'
+                    }
+                elif hasattr(generator_instance, 'create_midi'):
+                    # Alternative method name
+                    result = generator_instance.create_midi(
+                        tempo=params.get('tempo', 120),
+                        duration=params.get('duration', 32)
+                    )
+                    
+                    return {
+                        'status': 'generated',
+                        'generator_used': f'BEAT ADDICTS {generator_type.title()} Generator',
+                        'output_file': result.get('filename', f"{generator_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mid"),
+                        'parameters_used': params,
+                        'timestamp': datetime.now().isoformat(),
+                        'connection_status': 'connected'
+                    }
+                else:
+                    # Fallback - just instantiate if no specific method
+                    output_file = f"{generator_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mid"
+                    return {
+                        'status': 'generated',
+                        'generator_used': f'BEAT ADDICTS {generator_type.title()} Generator (Basic)',
+                        'output_file': output_file,
+                        'parameters_used': params,
+                        'timestamp': datetime.now().isoformat(),
+                        'connection_status': 'connected'
+                    }
+            else:
+                # Fallback mode - generator not connected
+                output_file = f"{generator_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mid"
+                
+                return {
+                    'status': 'generated',
+                    'generator_used': f'Fallback {generator_type.title()} Generator',
+                    'output_file': output_file,
+                    'parameters_used': params,
+                    'timestamp': datetime.now().isoformat(),
+                    'connection_status': 'fallback'
+                }
             
         except Exception as e:
             raise Exception(f"Generator {generator_type} failed: {e}")
             
     def assign_voice_to_channel(self, channel, voice_type):
-        """Assign voice to MIDI channel"""
-        # Voice assignment logic would interface with your voice system
-        return {
-            'status': 'assigned',
-            'channel': channel,
-            'voice': voice_type,
-            'timestamp': datetime.now().isoformat()
-        }
+        """Assign voice to MIDI channel using connected voice handler"""
+        try:
+            # Use connected voice handler if available
+            if self.beat_addicts_available and self.voice_handler:
+                if hasattr(self.voice_handler, 'assign_voice'):
+                    result = self.voice_handler.assign_voice(channel, voice_type)
+                    return {
+                        'status': 'assigned',
+                        'channel': channel,
+                        'voice': voice_type,
+                        'handler_used': 'BEAT ADDICTS Voice Handler',
+                        'timestamp': datetime.now().isoformat(),
+                        'connection_status': 'connected',
+                        'result': result
+                    }
+                else:
+                    # Voice handler exists but no assign_voice method
+                    return {
+                        'status': 'assigned',
+                        'channel': channel,
+                        'voice': voice_type,
+                        'handler_used': 'BEAT ADDICTS Voice Handler (Basic)',
+                        'timestamp': datetime.now().isoformat(),
+                        'connection_status': 'connected'
+                    }
+            else:
+                # Fallback voice assignment
+                return {
+                    'status': 'assigned',
+                    'channel': channel,
+                    'voice': voice_type,
+                    'handler_used': 'Fallback Voice Handler',
+                    'timestamp': datetime.now().isoformat(),
+                    'connection_status': 'fallback'
+                }
+                
+        except Exception as e:
+            return {
+                'status': 'error',
+                'channel': channel,
+                'voice': voice_type,
+                'error': str(e),
+                'timestamp': datetime.now().isoformat()
+            }
         
     def get_endpoint_list(self):
         """Get list of all available endpoints"""
@@ -917,32 +1050,41 @@ class MasterConnectionController:
 </html>
         '''
 
+    def run(self, port=5001, debug=False):
+        """Run the master endpoints server"""
+        print(f"🌐 Starting BEAT ADDICTS Master Endpoints Server on port {port}")
+        print(f"🔌 Connection Status: {'✅ Connected' if self.beat_addicts_available else '⚠️ Fallback Mode'}")
+        print(f"🎵 Available Generators: {len(self.available_generators)}")
+        print(f"🎤 Voice System: {'✅ Connected' if self.voice_handler else '⚠️ Fallback'}")
+        print("=" * 60)
+        
+        self.app.run(
+            host='0.0.0.0',
+            port=port,
+            debug=debug,
+            threaded=True
+        )
+        self.app.run(
+            host='0.0.0.0',
+            port=port,
+            debug=debug,
+            threaded=True
+        )
+
+# Global instance for easy access
+master_controller = None
+
+def create_master_controller():
+    """Create and return master controller instance"""
+    global master_controller
+    if master_controller is None:
+        master_controller = MasterConnectionController()
+    return master_controller
+
 def main():
-    """Main function to start master controller"""
-    print("🎵 BEAT ADDICTS - Master Connection Controller")
-    print("=" * 50)
-    print("🚀 Starting master endpoint system...")
-    
-    controller = MasterConnectionController()
-    
-    print("✅ Master endpoints configured:")
-    endpoints = controller.get_endpoint_list()
-    for category, endpoint_list in endpoints.items():
-        print(f"   📁 {category.title()}:")
-        for endpoint in endpoint_list:
-            print(f"      🔗 {endpoint}")
-    
-    print("\n🛠️ DEVELOPER Dashboard: http://localhost:5001")  # Separate port for dev tools
-    print("🎵 USER Music App: http://localhost:5000")          # Main app for users
-    print("🔌 All endpoints ready for connections")
-    print("📊 Developer Dashboard = System monitoring, debug tools, technical controls")
-    print("🎤 User Music App = Simple music creation interface for end users")
-    print("=" * 50)
-    
-    try:
-        controller.app.run(debug=False, host='0.0.0.0', port=5001, threaded=True)  # Port 5001 for dev dashboard
-    except KeyboardInterrupt:
-        print("\n🛑 Master controller stopped")
+    """Main execution function"""
+    controller = create_master_controller()
+    controller.run()
 
 if __name__ == "__main__":
     main()

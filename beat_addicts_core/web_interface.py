@@ -233,5 +233,7 @@ if __name__ == '__main__':
     except ImportError:
         print("Voice integration not available")
     
-    print("BEAT ADDICTS Studio starting at http://localhost:5000")
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    # Use port 5002 to avoid conflicts with main music app (5000) and master endpoints (5001)
+    port = 5002
+    print(f"BEAT ADDICTS Core Web Interface starting at http://localhost:{port}")
+    app.run(debug=False, host='0.0.0.0', port=port, threaded=True)
