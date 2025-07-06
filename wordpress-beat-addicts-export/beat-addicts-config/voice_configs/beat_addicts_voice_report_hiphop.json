@@ -1,0 +1,73 @@
+{
+  "genre": "hiphop",
+  "total_instruments": 4,
+  "assignments": [
+    {
+      "instrument_index": 0,
+      "role": "drums",
+      "program": 118,
+      "channel": 9,
+      "velocity_range": [
+        60,
+        120
+      ],
+      "beat_addicts_optimized": true,
+      "effects": {}
+    },
+    {
+      "instrument_index": 1,
+      "role": "bass",
+      "program": 37,
+      "channel": 1,
+      "velocity_range": [
+        70,
+        127
+      ],
+      "beat_addicts_optimized": true,
+      "effects": {
+        "reverb": 0.2,
+        "chorus": 0.1,
+        "pan": 0
+      }
+    },
+    {
+      "instrument_index": 2,
+      "role": "lead",
+      "program": 81,
+      "channel": 2,
+      "velocity_range": [
+        60,
+        127
+      ],
+      "beat_addicts_optimized": true,
+      "effects": {
+        "reverb": 0.3,
+        "chorus": 0.5,
+        "pan": -9
+      }
+    },
+    {
+      "instrument_index": 3,
+      "role": "rhythm",
+      "program": 80,
+      "channel": 2,
+      "velocity_range": [
+        60,
+        127
+      ],
+      "beat_addicts_optimized": true,
+      "effects": {
+        "reverb": 0.3,
+        "chorus": 0.5,
+        "pan": -31
+      }
+    }
+  ],
+  "beat_addicts_version": "2.0",
+  "recommendations": [
+    "Beat Addicts: Use program 118 for drums on channel 9",
+    "Beat Addicts: Use program 37 for bass on channel 1",
+    "Beat Addicts: Use program 81 for lead on channel 2",
+    "Beat Addicts: Use program 80 for rhythm on channel 2"
+  ]
+}

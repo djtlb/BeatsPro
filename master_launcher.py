@@ -21,6 +21,8 @@ try:
 except ImportError as e:
     print(f"⚠️ Connection components not available: {e}")
     CONNECTION_MANAGER_AVAILABLE = False
+    BeatAddictsConnectionManager = None
+    MasterConnectionController = None
 
 class BeatAddictsMasterLauncher:
     """Master orchestrator for all BEAT ADDICTS connections and endpoints"""

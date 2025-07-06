@@ -1,0 +1,8 @@
+{
+    "features": {
+        "intelliphp": {
+            "enabled": true,
+            "autoload": true
+        }
+    }
+}

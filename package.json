@@ -1,0 +1,23 @@
+{
+  "name": "sunoai",
+  "version": "1.0.7",
+  "description": "A new way to create and share AI models.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunoai/sunoai.git"
+  },
+  "author": "Suno AI",
+  "license": "MIT",
+  "features": {
+    "intelliphp": "enabled"
+  },
+  "keywords": [
+    "sunoai",
+    "intelliphp",
+    "php-autocomplete"
+  ]
+}

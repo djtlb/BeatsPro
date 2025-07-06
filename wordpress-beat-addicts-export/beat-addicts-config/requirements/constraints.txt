@@ -1,0 +1,27 @@
+# 🎵 BEAT ADDICTS - Professional Music Production AI Dependencies
+# The ultimate requirements for professional music generation
+
+# Core web framework for Beat Addicts Studio
+flask==2.3.3
+werkzeug==2.3.7
+
+# Scientific computing for Beat Addicts AI engine
+numpy==1.24.3
+
+# Professional MIDI processing for Beat Addicts
+pretty_midi==0.2.10
+mido==1.3.0
+
+# AI/ML framework for Beat Addicts neural networks
+tensorflow==2.13.0
+
+# Audio processing for Beat Addicts sound engine
+scipy==1.11.4
+librosa==0.10.1
+
+# Music theory for Beat Addicts professional features
+music21==9.1.0
+
+# Beat Addicts additional tools
+scikit-learn>=1.3.0
+matplotlib>=3.7.0

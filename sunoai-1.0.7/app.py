@@ -1,125 +1,125 @@
-from flask import Flask, jsonify, render_template, request, send_file, url_for
+from flask import Flask, request, jsonify, render_template, send_file
 import os
-import numpy as np
-import wave
-from datetime import datetime
-import io
-import base64
-import scipy.signal
-import scipy.fft
-from scipy import signal
-import librosa
-import random
-import math
-import random
-from scipy import signal
+import json
+import time
+import requests
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Create directories for generated content
-os.makedirs('static/generated', exist_ok=True)
-os.makedirs('static/previews', exist_ok=True)
+# Configuration
+UPLOAD_FOLDER = 'static/generated'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Advanced music production classes and functions
-class MusicEngine:
-    def __init__(self, sample_rate=44100):
-        self.sample_rate = sample_rate
-        self.note_frequencies = self._generate_note_frequencies()
-        
-    def _generate_note_frequencies(self):
-        """Generate a full frequency map for musical notes"""
-        # A4 = 440 Hz as reference
-        notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-        frequencies = {}
-        
-        for octave in range(0, 9):
-            for i, note in enumerate(notes):
-                # Calculate frequency using equal temperament
-                semitones_from_a4 = (octave - 4) * 12 + (i - 9)  # A is the 9th note
-                freq = 440 * (2 ** (semitones_from_a4 / 12))
-                frequencies[f"{note}{octave}"] = freq
-                
-        return frequencies
+# AI Music Generation API Keys (you'll need to get these)
+SUNO_API_KEY = os.environ.get('SUNO_API_KEY', '')  # Get from suno.ai
+UDIO_API_KEY = os.environ.get('UDIO_API_KEY', '')  # Alternative: udio.com
+MUSICGEN_API_KEY = os.environ.get('MUSICGEN_API_KEY', '')  # Alternative: Hugging Face
 
-class Synthesizer:
-    def __init__(self, sample_rate=44100):
-        self.sample_rate = sample_rate
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/drop_beat', methods=['POST'])
+def drop_beat():
+    try:
+        data = request.json
+        prompt = data.get('prompt', '')
+        genre = data.get('genre', '')
+        mood = data.get('mood', 'energetic')
+        duration = data.get('duration', 180)
         
-    def generate_waveform(self, frequency, duration, waveform='sine', amplitude=0.5):
-        """Generate various waveforms with proper envelopes"""
-        samples = int(duration * self.sample_rate)
-        t = np.linspace(0, duration, samples, False)
+        # Try different AI services in order of preference
+        result = None
         
-        if waveform == 'sine':
-            wave = np.sin(2 * np.pi * frequency * t)
-        elif waveform == 'square':
-            wave = signal.square(2 * np.pi * frequency * t)
-        elif waveform == 'sawtooth':
-            wave = signal.sawtooth(2 * np.pi * frequency * t)
-        elif waveform == 'triangle':
-            wave = signal.sawtooth(2 * np.pi * frequency * t, width=0.5)
-        elif waveform == 'pulse':
-            wave = signal.square(2 * np.pi * frequency * t, duty=0.3)
-        else:
-            wave = np.sin(2 * np.pi * frequency * t)
+        # 1. Try Suno AI (most popular)
+        if SUNO_API_KEY and not result:
+            result = generate_with_suno(prompt, genre, mood, duration)
+        
+        # 2. Try Udio as backup
+        if UDIO_API_KEY and not result:
+            result = generate_with_udio(prompt, genre, mood, duration)
             
-        # Apply ADSR envelope (Attack, Decay, Sustain, Release)
-        envelope = self._create_adsr_envelope(samples, duration)
+        # 3. Try MusicGen as backup
+        if MUSICGEN_API_KEY and not result:
+            result = generate_with_musicgen(prompt, genre, mood, duration)
         
-        return wave * envelope * amplitude
-    
-    def _create_adsr_envelope(self, samples, duration):
-        """Create realistic ADSR envelope"""
-        attack_time = min(0.1, duration * 0.1)
-        decay_time = min(0.2, duration * 0.2)
-        release_time = min(0.3, duration * 0.3)
-        sustain_level = 0.7
+        # 4. Fall back to demo if no APIs available
+        if not result:
+            result = generate_demo_music(prompt, genre, mood, duration)
+            result['demo_mode'] = True
         
-        attack_samples = int(attack_time * self.sample_rate)
-        decay_samples = int(decay_time * self.sample_rate)
-        release_samples = int(release_time * self.sample_rate)
-        sustain_samples = samples - attack_samples - decay_samples - release_samples
+        return jsonify({
+            'success': True,
+            'result': result
+        })
         
-        envelope = np.zeros(samples)
-        
-        # Attack phase
-        if attack_samples > 0:
-            envelope[:attack_samples] = np.linspace(0, 1, attack_samples)
-        
-        # Decay phase
-        if decay_samples > 0:
-            start_idx = attack_samples
-            end_idx = attack_samples + decay_samples
-            envelope[start_idx:end_idx] = np.linspace(1, sustain_level, decay_samples)
-        
-        # Sustain phase
-        if sustain_samples > 0:
-            start_idx = attack_samples + decay_samples
-            end_idx = start_idx + sustain_samples
-            envelope[start_idx:end_idx] = sustain_level
-        
-        # Release phase
-        if release_samples > 0:
-            start_idx = samples - release_samples
-            envelope[start_idx:] = np.linspace(sustain_level, 0, release_samples)
-            
-        return envelope
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
 
-class DrumMachine:
-    def __init__(self, sample_rate=44100):
-        self.sample_rate = sample_rate
+def generate_with_suno(prompt, genre, mood, duration):
+    """Generate music using Suno AI API"""
+    try:
+        # Suno AI API call
+        headers = {
+            'Authorization': f'Bearer {SUNO_API_KEY}',
+            'Content-Type': 'application/json'
+        }
         
-    def generate_kick(self, duration=0.5):
-        """Generate realistic kick drum"""
-        samples = int(duration * self.sample_rate)
-        t = np.linspace(0, duration, samples, False)
+        payload = {
+            'prompt': f"{genre} {mood} music: {prompt}",
+            'duration': duration,
+            'format': 'mp3'
+        }
         
-        # Two-oscillator kick: sub-bass + punch
-        sub_freq = 45  # Sub bass frequency
-        punch_freq = 80  # Punch frequency
+        response = requests.post(
+            'https://api.suno.ai/v1/generate',  # Example endpoint
+            headers=headers,
+            json=payload,
+            timeout=300  # 5 minute timeout
+        )
         
-        # Sub bass component
-        sub_wave = np.sin(2 * np.pi * sub_freq * t * (1 + 0.5 * np.exp(-t * 10)))
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                'id': data.get('id'),
+                'title': data.get('title', f'AI Generated - {prompt[:30]}'),
+                'filename': data.get('filename'),
+                'duration': duration,
+                'genre': genre,
+                'mood': mood,
+                'prompt': prompt,
+                'audio_url': data.get('audio_url'),
+                'lyrics': data.get('lyrics', ''),
+                'file_size': data.get('file_size', 'Unknown'),
+                'ai_service': 'Suno AI'
+            }
+    except Exception as e:
+        print(f"Suno AI failed: {e}")
+        return None
+
+def generate_with_udio(prompt, genre, mood, duration):
+    """Generate music using Udio API"""
+    try:
+        # Udio API call (similar structure)
+        headers = {
+            'Authorization': f'Bearer {UDIO_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'description': f"{genre} {mood}: {prompt}",
+            'duration_seconds': duration
+        }
+        
+        # This is a placeholder - replace with actual Udio endpoint
+        response = requests.post(
         sub_envelope = np.exp(-t * 8)
         sub_component = sub_wave * sub_envelope * 0.8
         

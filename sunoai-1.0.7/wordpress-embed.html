@@ -1,0 +1,56 @@
+<!-- Copy this code into a WordPress HTML block -->
+<div id="beat-addicts-app">
+    <style>
+        /* ...existing code... */
+        #beat-addicts-app {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b3d 100%);
+            border-radius: 15px;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        /* ...existing code... */
+    </style>
+    
+    <div style="background: rgba(42, 42, 42, 0.9); padding: 30px; border-radius: 15px;">
+        <h1 style="text-align: center; font-size: 2.5em; background: linear-gradient(45deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            🎵 Beat Addicts
+        </h1>
+        <p style="color: #667eea; text-align: center; font-style: italic;">Your addiction to perfect beats starts here</p>
+        
+        <form id="beatForm" style="margin-top: 20px;">
+            <input type="text" id="prompt" placeholder="What's your vibe?" style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; background: #3a3a3a; color: white;">
+            <textarea id="genre" placeholder="Describe your genre/style..." style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; background: #3a3a3a; color: white; min-height: 80px; resize: vertical;"></textarea>
+            <button type="submit" style="width: 100%; padding: 15px; background: linear-gradient(45deg, #667eea, #764ba2); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
+                🎵 Drop the Beat
+            </button>
+        </form>
+        
+        <div id="result" style="display: none; margin-top: 20px; padding: 20px; background: #333; border-radius: 8px;">
+            <div id="songDetails"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('beatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate generation
+            const result = document.getElementById('result');
+            const details = document.getElementById('songDetails');
+            
+            details.innerHTML = `
+                <h4>Generated Beat #${Math.floor(Math.random() * 9999)}</h4>
+                <p><strong>Prompt:</strong> ${document.getElementById('prompt').value}</p>
+                <p><strong>Genre:</strong> ${document.getElementById('genre').value}</p>
+                <p style="color: #667eea; margin-top: 15px;">
+                    <em>This is a demo version. Connect to your Flask backend for full functionality!</em>
+                </p>
+            `;
+            
+            result.style.display = 'block';
+        });
+    </script>
+</div>

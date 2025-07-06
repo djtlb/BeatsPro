@@ -1,0 +1,26 @@
+@echo off
+REM filepath: c:\Users\sally\Downloads\sunoai-1.0.7-rebuild\compress_database.bat
+REM Script to compress database backup with different formats
+
+echo Compressing database backup files...
+
+REM Create ZIP compressed version
+if exist "C:\Program Files\7-Zip\7z.exe" (
+    "C:\Program Files\7-Zip\7z.exe" a database_backup.sql.zip database_backup.sql
+    echo Created: database_backup.sql.zip
+)
+
+REM Create GZIP compressed version
+if exist "C:\Program Files\7-Zip\7z.exe" (
+    "C:\Program Files\7-Zip\7z.exe" a -tgzip database_backup.sql.gz database_backup.sql
+    echo Created: database_backup.sql.gz
+)
+
+REM Create BZIP2 compressed version
+if exist "C:\Program Files\7-Zip\7z.exe" (
+    "C:\Program Files\7-Zip\7z.exe" a -tbzip2 database_backup.sql.bz2 database_backup.sql
+    echo Created: database_backup.sql.bz2
+)
+
+echo Compression complete!
+pause

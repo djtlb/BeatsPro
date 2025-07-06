@@ -1,0 +1,34 @@
+{
+  "wordpress_integration": {
+    "plugin_name": "BEAT ADDICTS Music Production AI",
+    "version": "2.0.0",
+    "api_endpoints": {
+      "master": "http://localhost:5001",
+      "generators": "http://localhost:5001/api/generators",
+      "voice": "http://localhost:5001/api/voice"
+    },
+    "default_ports": {
+      "api_server": 5001,
+      "music_app": 5000,
+      "core_interface": 5002
+    }
+  },
+  "system_settings": {
+    "auto_start_services": true,
+    "debug_mode": false,
+    "max_generation_time": 30,
+    "supported_formats": [
+      "midi",
+      "wav",
+      "mp3"
+    ]
+  },
+  "security": {
+    "enable_cors": true,
+    "allowed_origins": [
+      "localhost",
+      "127.0.0.1"
+    ],
+    "api_key_required": false
+  }
+}
